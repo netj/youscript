@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Bookmarklet Editor</title>
+        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <style>
+            #frame { display: table-row; }
+            #code-pane, #bookmarklet-pane { display: table-cell; }
+        </style>
+    </head>
+    <body>
+        <h1>Bookmarklet Editor</h2>
+
+        <div id="frame">
+            <div id="code-pane">
+                <h2>Javascript</h2>
+                <textarea id="script" rows="10" cols="80">alert("Hello, World!");</textarea>
+            </div>
+
+            <div id="bookmarklet-pane">
+                <h2>Bookmarklet</h2>
+                <textarea id="bookmarklet" rows="10" cols="80">javascript:alert(%22Hello,%20World!%22);</textarea>
+            </div>
+        </div>
+
+        <script>
+            function encode() {
+                var bklet = "javascript:" + encodeURI(this.value);
+                $("#bookmarklet").each(function(){
+                    this.value = bklet;
+                });
+            }
+            function decode() {
+                var bklet = this.value.replace(/^javascript:\s*/i, "");
+                var js = decodeURI(bklet);
+                $("#script").each(function(){
+                    this.value = js;
+                });
+            }
+            $(document).ready(function(){
+                $("#script").change(encode);
+                $("#bookmarklet").change(decode);
+            });
+        </script>
+    </body>
+</html>
