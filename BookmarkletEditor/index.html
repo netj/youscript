@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Bookmarklet Editor</title>
+        <link rel="icon" href="favicon.ico" type="image/x-icon">
         <script src="http://code.jquery.com/jquery-1.7.1.min.js"
             latestsrc="http://code.jquery.com/jquery-latest.min.js"
             ></script>
@@ -22,17 +23,23 @@
                 border: 0px none;
                 background-color: #eee;
             }
-            .link {
-                display: block;
-                margin: 20px auto;
-                text-align: center;
-                font-weight: bold;
+
+            body {
+                font-family: 'Lucida Grande', Helvetica, sans-serif;
             }
-            #bookmarklet-link {
-                font-size: 200%;
+            #artwork {
+                float: left;
+                height: 150px;
+                margin-right: 10px;
             }
+            #title {
+                font-size: 64px;
+                color: #276094;
+            }
+
             .advice {
                 font-size: 80%;
+                color: #888;
             }
 
             input, textarea {
@@ -47,22 +54,35 @@
             textarea {
                 width: 95%;
             }
+
+            .link {
+                display: block;
+                margin: 20px auto;
+                text-align: center;
+                font-weight: bold;
+            }
+            #bookmarklet-link {
+                font-size: 200%;
+            }
         </style>
     </head>
     <body>
-        <h1>Bookmarklet Editor</h2>
+        <a href="http://netj.github.com/webutils/BookmarkletEditor/" style="text-decoration: none !important;">
+            <img id="artwork" src="bookmarklet-editor.png" alt="">
+            <h1 id="title">Bookmarklet Editor</h2>
+        </a>
 
         <div id="frame">
             <div id="bookmarklet-pane">
                 <h2>1. Paste your Bookmarklet URL</h2>
+                <p class="advice">
+                (You can skip to the next step and start directly from your Javascript in mind.)
+                </p>
                 <label for="bookmarklet-label">Label:</label>
                 <input type="text" id="bookmarklet-label" value="Untitled Bookmarklet" size="80">
                 <br>
                 <textarea id="bookmarklet" rows="10" cols="80">javascript:alert(%22Hello,%20World!%22);</textarea>
                 <br>
-                <p class="advice">
-                Yes, you can skip this step and always start directly from your Javascript in mind.
-                </p>
             </div>
 
             <div id="code-pane">
