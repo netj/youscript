@@ -1,8 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
         <title>Bookmarklet Editor</title>
-        <link rel="icon" href="favicon.ico" type="image/x-icon">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+        <link rel="icon" href="bookmarklet-editor.png" type="image/png">
         <script src="http://code.jquery.com/jquery-1.7.1.min.js"
             latestsrc="http://code.jquery.com/jquery-latest.min.js"
             ></script>
@@ -99,7 +101,7 @@
                 <p class="advice">
                 If you want to return to this editor with your bookmark or
                 share it with others, here's that link you'll need:<br>
-                    <a href="#" id="link-to-editor" class="link">Untitled Bookmarklet - Bookmarklet Editor</a>
+                    <a href="#" id="link-to-editor" class="link">Untitled Bookmarklet — Bookmarklet Editor</a>
                 </p>
                 <hr>
                 <p>
@@ -115,7 +117,7 @@
             origsrc="http://coffeescript.org/extras/coffee-script.js"></script>
         <script type="text/coffeescript">
             encode = ->
-                bklet = "javascript:" + encodeURI this.value;
+                bklet = "javascript:" + encodeURI this.value
                 $("#bookmarklet")
                     .val(bklet)
                 updateContents
@@ -137,22 +139,24 @@
                     for pair in (location.hash.substring 1).split /&/
                         nv = pair.split "=", 2
                         args[nv[0]] = unescape nv[1]
-                    $("#bookmarklet-label").val args.label
                     $("#bookmarklet")
                         .val(args.url)
+                        .trigger("change")
+                    $("#bookmarklet-label")
+                        .val(args.label)
                         .trigger("change")
 
             updateContents = ->
                 bklet = $("#bookmarklet").val()
                 label = $("#bookmarklet-label").val() ? "Your Bookmarklet"
                 $("#bookmarklet-link")
-                    .attr "href", bklet
-                    .text label
+                    .attr("href", bklet)
+                    .text(label)
                 encodeHash label, bklet
-                title = label + " - Bookmarklet Editor"
+                title = label + " — Bookmarklet Editor"
                 $("#link-to-editor")
-                    .attr "href", location.href
-                    .text title
+                    .attr("href", location.href)
+                    .text(title)
                 document.title = title
 
             $(document).ready ->
