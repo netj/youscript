@@ -2,7 +2,9 @@
 <html>
     <head>
         <title>Bookmarklet Editor</title>
-        <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script src="http://code.jquery.com/jquery-1.7.1.min.js"
+            latestsrc="http://code.jquery.com/jquery-latest.min.js"
+            ></script>
         <style>
             body {
                 margin: 60px auto;
@@ -81,82 +83,69 @@
                 </p>
                 <hr>
                 <p>
-                Enjoy!<br>
-                <br>
-                <a href="https://github.com/netj"><img
+                Enjoy! <a href="https://github.com/netj"><img
                     src="http://www.gravatar.com/avatar/697258b43bbf3d4e86853b6062e42217.png"
-                    alt="~netj" style="height:32px;"></a>
+                    alt="~netj" style="height:20px; vertical-align:top;"></a>
                 </p>
                 </ul>
             </div>
         </div>
 
-        <script src="http://coffeescript.org/extras/coffee-script.js"></script>
-        <script> // type="text/coffeescript">
-            function encode() {
-                var bklet = "javascript:" + encodeURI(this.value);
-                $("#bookmarklet").val(bklet);
-                updateContents();
-            }
-            function decode() {
-                var bklet = this.value.replace(/^\s*javascript:\s*/i, "");
-                var js = decodeURI(bklet);
-                $("#script").val(js);
-                updateContents();
-            }
-            function encodeHash(label, bklet) {
-                location.hash = "#" + "label="+ escape(label)
-                              + "&" + "url=" + escape(bklet)
-                              ;
-            }
-            function decodeHash() {
-                if (location.hash && location.hash.length > 1) {
-                    var args = {};
-                    var pairs = location.hash.substring(1).split(/&/);
-                    for (var i in pairs) {
-                        pair = pairs[i];
-                        var nv = pair.split(/=/,2);
-                        args[nv[0]] = unescape(nv[1]);
-                    }
-                    $("#bookmarklet-label")
-                        .val(args.label)
-                        ;
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.2.0/coffee-script.min.js"
+            origsrc="http://coffeescript.org/extras/coffee-script.js"></script>
+        <script type="text/coffeescript">
+            encode = ->
+                bklet = "javascript:" + encodeURI this.value;
+                $("#bookmarklet")
+                    .val(bklet)
+                updateContents
+
+            decode = ->
+                bklet = this.value.replace /^\s*javascript:\s*/i, ""
+                js = decodeURI bklet
+                $("#script")
+                    .val(js)
+                updateContents
+
+            encodeHash = (label, bklet) ->
+                location.hash  = "#"+ "label="+ escape label
+                location.hash += "&"+ "url="  + escape bklet
+
+            decodeHash = ->
+                if location.hash and location.hash.length > 1
+                    args = {}
+                    for pair in (location.hash.substring 1).split /&/
+                        nv = pair.split "=", 2
+                        args[nv[0]] = unescape nv[1]
+                    $("#bookmarklet-label").val args.label
                     $("#bookmarklet")
                         .val(args.url)
                         .trigger("change")
-                        ;
-                }
-            }
-            function updateContents() {
-                var bklet = $("#bookmarklet").val();
-                var label = $("#bookmarklet-label").val() || "Your Bookmarklet";
+
+            updateContents = ->
+                bklet = $("#bookmarklet").val()
+                label = $("#bookmarklet-label").val() ? "Your Bookmarklet"
                 $("#bookmarklet-link")
-                    .attr("href", bklet)
-                    .text(label)
-                    ;
-                encodeHash(label, bklet);
-                var title = label + " - Bookmarklet Editor";
+                    .attr "href", bklet
+                    .text label
+                encodeHash label, bklet
+                title = label + " - Bookmarklet Editor"
                 $("#link-to-editor")
-                    .attr("href", location.href)
-                    .text(title)
-                    ;
-                document.title = title;
-            }
-            $(document).ready(function(){
+                    .attr "href", location.href
+                    .text title
+                document.title = title
+
+            $(document).ready ->
                 $("#script")
                     .keyup(encode)
                     .change(encode)
-                    ;
                 $("#bookmarklet")
                     .keyup(decode)
                     .change(decode)
-                    ;
                 $("#bookmarklet-label")
                     .keyup(updateContents)
                     .change(updateContents)
-                    ;
-                decodeHash();
-            });
+                decodeHash()
         </script>
     </body>
 </html>
