@@ -4,42 +4,158 @@
         <title>Bookmarklet Editor</title>
         <script src="http://code.jquery.com/jquery-latest.min.js"></script>
         <style>
-            #frame { display: table-row; }
-            #code-pane, #bookmarklet-pane { display: table-cell; }
+            body {
+                margin: 60px auto;
+                width: 600px;
+            }
+            h2, hr {
+                margin-top: 30px;
+            }
+            h2 {
+                border-top: 5px solid #eee;
+                padding-top: 10px;
+            }
+            hr {
+                height: 5px;
+                border: 0px none;
+                background-color: #eee;
+            }
+            .link {
+                display: block;
+                margin: 20px auto;
+                text-align: center;
+                font-weight: bold;
+            }
+            #bookmarklet-link {
+                font-size: 200%;
+            }
+            .advice {
+                font-size: 80%;
+            }
+
+            input, textarea {
+                font-family: monospace;
+                font-size: .9em;
+                border: 1px solid #ccc;
+                padding: 3px;
+            }
+            input {
+                width: 80%;
+            }
+            textarea {
+                width: 95%;
+            }
         </style>
     </head>
     <body>
         <h1>Bookmarklet Editor</h2>
 
         <div id="frame">
+            <div id="bookmarklet-pane">
+                <h2>1. Paste your Bookmarklet URL</h2>
+                <label for="bookmarklet-label">Label:</label>
+                <input type="text" id="bookmarklet-label" value="Untitled Bookmarklet" size="80">
+                <br>
+                <textarea id="bookmarklet" rows="10" cols="80">javascript:alert(%22Hello,%20World!%22);</textarea>
+                <br>
+                <p class="advice">
+                Yes, you can skip this step and always start directly from your Javascript in mind.
+                </p>
+            </div>
+
             <div id="code-pane">
-                <h2>Javascript</h2>
+                <h2>2. Edit Javascript</h2>
                 <textarea id="script" rows="10" cols="80">alert("Hello, World!");</textarea>
             </div>
 
-            <div id="bookmarklet-pane">
-                <h2>Bookmarklet</h2>
-                <textarea id="bookmarklet" rows="10" cols="80">javascript:alert(%22Hello,%20World!%22);</textarea>
+            <div id="links-pane">
+                <h2>3. Done!</h2>
+                <p>
+                Here's your bookmarklet.  Simply drag it to your bookmarks!<br>
+                <a href="#" id="bookmarklet-link" class="link">Untitled Bookmarklet</a>
+                </p>
+                <p class="advice">
+                If you want to return to this editor with your bookmark or
+                share it with others, here's that link you'll need:<br>
+                    <a href="#" id="link-to-editor" class="link">Untitled Bookmarklet - Bookmarklet Editor</a>
+                </p>
+                <hr>
+                <p>
+                Enjoy!<br>
+                <br>
+                <a href="https://github.com/netj"><img
+                    src="http://www.gravatar.com/avatar/697258b43bbf3d4e86853b6062e42217.png"
+                    alt="~netj" style="height:32px;"></a>
+                </p>
+                </ul>
             </div>
         </div>
 
-        <script>
+        <script src="http://coffeescript.org/extras/coffee-script.js"></script>
+        <script> // type="text/coffeescript">
             function encode() {
                 var bklet = "javascript:" + encodeURI(this.value);
-                $("#bookmarklet").each(function(){
-                    this.value = bklet;
-                });
+                $("#bookmarklet").val(bklet);
+                updateContents();
             }
             function decode() {
-                var bklet = this.value.replace(/^javascript:\s*/i, "");
+                var bklet = this.value.replace(/^\s*javascript:\s*/i, "");
                 var js = decodeURI(bklet);
-                $("#script").each(function(){
-                    this.value = js;
-                });
+                $("#script").val(js);
+                updateContents();
+            }
+            function encodeHash(label, bklet) {
+                location.hash = "#" + "label="+ escape(label)
+                              + "&" + "url=" + escape(bklet)
+                              ;
+            }
+            function decodeHash() {
+                if (location.hash && location.hash.length > 1) {
+                    var args = {};
+                    var pairs = location.hash.substring(1).split(/&/);
+                    for (var i in pairs) {
+                        pair = pairs[i];
+                        var nv = pair.split(/=/,2);
+                        args[nv[0]] = unescape(nv[1]);
+                    }
+                    $("#bookmarklet-label")
+                        .val(args.label)
+                        ;
+                    $("#bookmarklet")
+                        .val(args.url)
+                        .trigger("change")
+                        ;
+                }
+            }
+            function updateContents() {
+                var bklet = $("#bookmarklet").val();
+                var label = $("#bookmarklet-label").val() || "Your Bookmarklet";
+                $("#bookmarklet-link")
+                    .attr("href", bklet)
+                    .text(label)
+                    ;
+                encodeHash(label, bklet);
+                var title = label + " - Bookmarklet Editor";
+                $("#link-to-editor")
+                    .attr("href", location.href)
+                    .text(title)
+                    ;
+                document.title = title;
             }
             $(document).ready(function(){
-                $("#script").change(encode);
-                $("#bookmarklet").change(decode);
+                $("#script")
+                    .keyup(encode)
+                    .change(encode)
+                    ;
+                $("#bookmarklet")
+                    .keyup(decode)
+                    .change(decode)
+                    ;
+                $("#bookmarklet-label")
+                    .keyup(updateContents)
+                    .change(updateContents)
+                    ;
+                decodeHash();
             });
         </script>
     </body>
