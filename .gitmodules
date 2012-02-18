@@ -1,0 +1,3 @@
+[submodule "BookmarkletEditor/codemirror2"]
+	path = BookmarkletEditor/codemirror2
+	url = git://github.com/marijnh/CodeMirror2

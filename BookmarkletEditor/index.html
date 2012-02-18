@@ -3,12 +3,16 @@
     <head>
         <meta charset="utf-8">
         <title>Bookmarklet Editor</title>
-        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-        <link rel="icon" href="bookmarklet-editor.png" type="image/png">
-        <script src="http://code.jquery.com/jquery-1.7.1.min.js"
-            latestsrc="http://code.jquery.com/jquery-latest.min.js"
-            ></script>
-        <style>
+        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+        <link rel="icon" type="image/png" href="bookmarklet-editor.png">
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"
+            latestsrc="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.2.0/coffee-script.min.js"
+            origsrc="http://coffeescript.org/extras/coffee-script.js"></script>
+        <link rel="stylesheet" type="text/css" href="codemirror2/lib/codemirror.css">
+        <script type="text/javascript" src="codemirror2/lib/codemirror.js"></script>
+        <script type="text/javascript" src="codemirror2/mode/javascript/javascript.js"></script>
+        <style type="text/css">
             body {
                 margin: 60px auto;
                 width: 600px;
@@ -89,7 +93,7 @@
 
             <div id="code-pane">
                 <h2>2. Edit Javascript</h2>
-                <textarea id="script" rows="10" cols="80">alert("Hello, World!");</textarea>
+                <textarea id="code" rows="10" cols="80">alert("Hello, World!");</textarea>
             </div>
 
             <div id="links-pane">
@@ -113,11 +117,10 @@
             </div>
         </div>
 
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.2.0/coffee-script.min.js"
-            origsrc="http://coffeescript.org/extras/coffee-script.js"></script>
         <script type="text/coffeescript">
+            editor = null
             encode = ->
-                bklet = "javascript:" + encodeURI this.value
+                bklet = "javascript:" + encodeURI editor.getValue()
                 $("#bookmarklet")
                     .val(bklet)
                 updateContents()
@@ -125,8 +128,7 @@
             decode = ->
                 bklet = this.value.replace /^\s*javascript:\s*/i, ""
                 js = decodeURI bklet
-                $("#script")
-                    .val(js)
+                editor.setValue(js)
                 updateContents()
 
             encodeHash = (label, bklet) ->
@@ -160,15 +162,19 @@
                 document.title = title
 
             $(document).ready ->
-                $("#script")
-                    .keyup(encode)
-                    .change(encode)
-                $("#bookmarklet")
-                    .keyup(decode)
-                    .change(decode)
+                # setup UI
                 $("#bookmarklet-label")
                     .keyup(updateContents)
                     .change(updateContents)
+                $("#bookmarklet")
+                    .keyup(decode)
+                    .change(decode)
+                editor = CodeMirror.fromTextArea $("#code")[0],
+                    lineWrapping: true
+                    lineNumbers: true
+                    matchBrackets: true
+                    onChange: encode
+                # load info from URL
                 decodeHash()
         </script>
     </body>
