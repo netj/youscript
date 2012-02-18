@@ -100,12 +100,12 @@
                 <h2>3. Done!</h2>
                 <p>
                 Here's your bookmarklet.  Simply drag it to your bookmarks!<br>
-                <a href="#" id="bookmarklet-link" class="link">Untitled Bookmarklet</a>
+                <a href="javascript:alert(%22Hello,%20World!%22);" id="bookmarklet-link" class="link">Untitled Bookmarklet</a>
                 </p>
                 <p class="advice">
                 If you want to return to this editor with your bookmark or
                 share it with others, here's that link you'll need:<br>
-                    <a href="#" id="link-to-editor" class="link">Untitled Bookmarklet — Bookmarklet Editor</a>
+                    <a href="#label=Untitled%20Bookmarklet&url=javascript%3Aalert%28%2522Hello%2C%2520World%21%2522%29%3B" id="link-to-editor" class="link">Untitled Bookmarklet — Bookmarklet Editor</a>
                 </p>
                 <hr>
                 <p>
@@ -113,12 +113,20 @@
                     src="http://www.gravatar.com/avatar/697258b43bbf3d4e86853b6062e42217.png"
                     alt="~netj" style="height:20px; vertical-align:top;"></a>
                 </p>
+                <p class="advice">
+                P.S. source code for this editor is available at <a
+                    href="https://github.com/netj/webutils/tree/gh-pages/BookmarkletEditor"><img
+                    src="https://github.com/favicon.ico" type="image/x-icon"
+                    style="vertical-align:top; margin-right:2px;"
+                    alt="">GitHub</a>.
+                </p>
                 </ul>
             </div>
         </div>
 
         <script type="text/coffeescript">
             editor = null
+
             encode = ->
                 bklet = "javascript:" + encodeURI editor.getValue()
                 $("#bookmarklet")
