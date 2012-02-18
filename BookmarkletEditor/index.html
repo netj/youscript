@@ -85,7 +85,7 @@
                 (You can skip to the next step and start directly from your Javascript in mind.)
                 </p>
                 <label for="bookmarklet-label">Label:</label>
-                <input type="text" id="bookmarklet-label" value="Untitled Bookmarklet" size="80">
+                <input type="text" id="bookmarklet-label" value="" size="80">
                 <br>
                 <textarea id="bookmarklet" rows="10" cols="80">javascript:alert(%22Hello,%20World!%22);</textarea>
                 <br>
@@ -100,12 +100,16 @@
                 <h2>3. Done!</h2>
                 <p>
                 Here's your bookmarklet.  Simply drag it to your bookmarks!<br>
-                <a href="javascript:alert(%22Hello,%20World!%22);" id="bookmarklet-link" class="link">Untitled Bookmarklet</a>
+                <a href="javascript:alert(%22Hello,%20World!%22);"
+                    id="bookmarklet-link" class="link">Your Bookmarklet</a>
                 </p>
                 <p class="advice">
                 If you want to return to this editor with your bookmark or
                 share it with others, here's that link you'll need:<br>
-                    <a href="#label=Untitled%20Bookmarklet&url=javascript%3Aalert%28%2522Hello%2C%2520World%21%2522%29%3B" id="link-to-editor" class="link">Untitled Bookmarklet — Bookmarklet Editor</a>
+                    <a
+                        href="#label=&url=javascript%3Aalert%28%2522Hello%2C%2520World%21%2522%29%3B"
+                        id="link-to-editor" class="link">Your Bookmarklet —
+                        Bookmarklet Editor</a>
                 </p>
                 <hr>
                 <p>
@@ -140,8 +144,9 @@
                 updateContents()
 
             encodeHash = (label, bklet) ->
-                location.hash  = "#"+ "label="+ escape label
-                location.hash += "&"+ "url="  + escape bklet
+                hash  = "#"+ "label="+ escape label
+                hash += "&"+ "url="  + escape bklet
+                location.hash = hash
 
             decodeHash = ->
                 if location.hash and location.hash.length > 1
@@ -155,19 +160,23 @@
                     $("#bookmarklet-label")
                         .val(args.label)
                         .trigger("change")
+                else
+                    updateContents()
 
             updateContents = ->
                 bklet = $("#bookmarklet").val()
-                label = $("#bookmarklet-label").val() ? "Your Bookmarklet"
+                label = $("#bookmarklet-label").val()
+                nonemptyLabel = label || "Your Bookmarklet"
                 $("#bookmarklet-link")
                     .attr("href", bklet)
-                    .text(label)
+                    .text(nonemptyLabel)
+                title = "#{if label?.length then "#{label} — " else ""}Bookmarklet Editor"
+                nonemptyTitle = "#{nonemptyLabel} — Bookmarklet Editor"
                 encodeHash label, bklet
-                title = label + " — Bookmarklet Editor"
+                document.title = title
                 $("#link-to-editor")
                     .attr("href", location.href)
-                    .text(title)
-                document.title = title
+                    .text(nonemptyTitle)
 
             $(document).ready ->
                 # setup UI
