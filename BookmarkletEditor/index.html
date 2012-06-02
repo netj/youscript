@@ -144,8 +144,8 @@
                 updateContents()
 
             encodeHash = (label, bklet) ->
-                hash  = "#"+ "label="+ escape label
-                hash += "&"+ "url="  + escape bklet
+                hash  = "#"+ "label="+ encodeURIComponent label
+                hash += "&"+ "url="  + encodeURIComponent bklet
                 location.hash = hash
 
             decodeHash = ->
@@ -153,7 +153,7 @@
                     args = {}
                     for pair in (location.hash.substring 1).split /&/
                         nv = pair.split "=", 2
-                        args[nv[0]] = unescape nv[1]
+                        args[nv[0]] = decodeURIComponent nv[1]
                     $("#bookmarklet")
                         .val(args.url)
                         .trigger("change")
