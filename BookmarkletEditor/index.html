@@ -144,14 +144,24 @@
                 updateContents()
 
             encodeHash = (label, bklet) ->
-                hash  = "#"+ "label="+ encodeURIComponent label
-                hash += "&"+ "url="  + encodeURIComponent bklet
-                location.hash = hash
+                hash  = ""
+                hash += "label="+ encodeURIComponent label
+                hash += "&"
+                hash += "url="  + encodeURIComponent bklet
+                location.hash = "#" + (
+                    unless typeof btoa == "function" then hash
+                    else if hash.match /%[8-9A-F][0-9A-F]/i then "base64,#{btoa hash}"
+                    else hash
+                )
+
 
             decodeHash = ->
                 if location.hash and location.hash.length > 1
+                    hash = location.hash.substring 1
+                    if m = hash.match /^base64,(.*)$/
+                        hash = atob m[1]
                     args = {}
-                    for pair in (location.hash.substring 1).split /&/
+                    for pair in hash.split /&/
                         nv = pair.split "=", 2
                         args[nv[0]] = decodeURIComponent nv[1]
                     $("#bookmarklet")
