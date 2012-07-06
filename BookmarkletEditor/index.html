@@ -134,6 +134,16 @@
             </div>
         </div>
 
+        <div id="saved-pane">
+            <div id="githubAuth">
+                <input type="text" id="githubUser">
+                <input type="password" id="githubPassword">
+                <button id="githubLogin">Login to GitHub</button>
+            </div>
+            <ul id="gists">
+            </ul>
+        </div>
+
         <script type="text/coffeescript">
             editor = null
 
@@ -194,7 +204,7 @@
                     .attr("href", location.href)
                     .text(nonemptyTitle)
 
-            $(document).ready ->
+            $ ->
                 # setup UI
                 $("#bookmarklet-label")
                     .keyup(updateContents)
@@ -209,6 +219,51 @@
                     onChange: encode
                 # load info from URL
                 decodeHash()
+
+
+            ## Gist storage
+            gistList = $("ul#gists")
+
+            authenticateWithGitHub = (githubUserId, githubPassword) ->
+                $.ajax
+                    url: "https://api.github.com/authorizations"
+                    type: "POST"
+                    contentType: "application/json"
+                    processData: false
+                    data: JSON.stringify {
+                            scopes:["gist"]
+                            note:"Bookmarklet Editor"
+                            note_url:"http://netj.github.com/webutils/BookmarkletEditor/"
+                        }
+                    headers:
+                        Authorization: "Basic #{btoa("#{githubUserId}:#{githubPassword}")}"
+                    dataType: "json"
+                    success: (res) ->
+                        console.log res
+                        localStorage.githubAccessToken = res.token
+                        loadSavedGists res.token
+
+            loadSavedGists = (access_token) ->
+                $.getJSON "https://api.github.com/gists?access_token=#{access_token}", (gists) ->
+                    for gist in gists
+                        $("<li>")
+                            .attr(title: gist.id)
+                            .text(gist.description + gist.files)
+                            .appendTo(gistList)
+                    gistList.css(display:"")
+                    $("#githubAuth").remove()
+                .fail (err) ->
+                    gistList.css(display:"none")
+
+            $ ->
+                $("#githubLogin").click ->
+                    authenticateWithGitHub $("#githubUser").val(), $("#githubPassword").val()
+                # load saved bookmarklets from GitHub gists
+                if localStorage.githubAccessToken?
+                    loadSavedGists localStorage.githubAccessToken
+                else
+                    gistList.css(display:"none")
+
         </script>
 
         <!-- Google Analytics -->
