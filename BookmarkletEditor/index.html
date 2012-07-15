@@ -1,286 +1,394 @@
 ﻿<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Bookmarklet Editor</title>
-        <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-        <link rel="icon" type="image/png" href="bookmarklet-editor.png">
-        <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"
-            latestsrc="http://code.jquery.com/jquery-latest.min.js"></script>
-        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.2.0/coffee-script.min.js"
-            origsrc="http://coffeescript.org/extras/coffee-script.js"></script>
-        <link rel="stylesheet" type="text/css" href="codemirror2/lib/codemirror.css">
-        <script type="text/javascript" src="codemirror2/lib/codemirror.js"></script>
-        <script type="text/javascript" src="codemirror2/mode/javascript/javascript.js"></script>
-        <style type="text/css">
-            body {
-                margin: 60px auto;
-                width: 600px;
-            }
-            h2, hr {
-                margin-top: 30px;
-            }
-            h2 {
-                border-top: 5px solid #eee;
-                padding-top: 10px;
-            }
-            hr {
-                height: 5px;
-                border: 0px none;
-                background-color: #eee;
-            }
+  <head>
+    <meta charset="utf-8">
+    <title>Bookmarklet Editor</title>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" href="bookmarklet-editor.png">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.3.1/coffee-script.min.js"
+      origsrc="http://coffeescript.org/extras/coffee-script.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"
+      latestsrc="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script type="text/javascript" src="codemirror2/lib/codemirror.js"></script>
+    <script type="text/javascript" src="codemirror2/mode/javascript/javascript.js"></script>
+    <link rel="stylesheet" type="text/css" href="codemirror2/lib/codemirror.css">
+    <style type="text/less">
+      @import "bootstrap/less/bootstrap.less";
+      @import "bootstrap/less/responsive.less";
 
-            body {
-                font-family: 'Lucida Grande', Helvetica, sans-serif;
-            }
-            #artwork {
-                float: left;
-                height: 150px;
-                margin-right: 10px;
-            }
-            #title {
-                font-size: 64px;
-                color: #276094;
-            }
+      @media screen and (min-width: 980px) {
+        body {
+          padding-top : 60px;
+          padding-bottom: 40px;
+        }
+      }
 
-            .advice {
-                font-size: 80%;
-                color: #888;
-            }
+      .brand img {
+        height: 22px;
+        margin-right: 5px;
+        vertical-align: text-bottom;
+      }
 
-            input, textarea {
-                font-family: monospace;
-                font-size: .9em;
-                border: 1px solid #ccc;
-                padding: 3px;
-            }
-            input {
-                width: 80%;
-            }
-            textarea {
-                width: 95%;
-            }
+      #gist-logo {
+        height: 2.5ex;
+        vertical-align: middle;
+      }
 
-            .CodeMirror-scroll {
-                height: auto;
-                overflow-y: hidden;
-                overflow-x: auto;
-            }
+      #bookmarklet { // url
+        font-family: @monoFontFamily;
+      }
 
-            .link {
-                display: block;
-                margin: 20px auto;
-                text-align: center;
-                font-weight: bold;
-            }
-            #bookmarklet-link {
-                font-size: 200%;
-            }
-        </style>
-    </head>
-    <body>
-        <a href="http://netj.github.com/webutils/BookmarkletEditor/" style="text-decoration: none !important;">
-            <img id="artwork" src="bookmarklet-editor.png" alt="">
-            <h1 id="title">Bookmarklet Editor</h2>
-        </a>
+      .controls {
+        .input-prepend {
+          display: block;
+          input.input-xxlarge {
+            width: 85%;
+          }
+        }
+      }
 
-        <div id="frame">
-            <div id="bookmarklet-pane">
-                <h2>1. Paste your Bookmarklet URL</h2>
-                <p class="advice">
-                (You can skip to the next step and start directly from your Javascript in mind.)
-                </p>
-                <label for="bookmarklet-label">Label:</label>
-                <input type="text" id="bookmarklet-label" value="" size="80">
-                <br>
-                <textarea id="bookmarklet" rows="10" cols="80">javascript:alert(%22Hello,%20World!%22);</textarea>
-                <br>
-            </div>
+      .CodeMirror {
+        background-color: @inputBackground;
+        border: 1px solid @inputBorder;
+        .border-radius(@inputBorderRadius);
+        .box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
+        .transition(~"border linear 0.2s, box-shadow linear 0.2s");
 
-            <div id="code-pane">
-                <h2>2. Edit Javascript</h2>
-                <textarea id="code" rows="10" cols="80">alert("Hello, World!");</textarea>
-            </div>
+        // Focus state
+        &.CodeMirror-focused {
+          border-color: rgba(82,168,236,.8);
+          outline: 0;
+          outline: thin dotted \9; /* IE6-9 */
+          .box-shadow(~"inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6)");
+        }
 
-            <div id="links-pane">
-                <h2>3. Done!</h2>
-                <p>
-                Here's your bookmarklet.  Simply drag it to your bookmarks!<br>
-                <a href="javascript:alert(%22Hello,%20World!%22);"
-                    id="bookmarklet-link" class="link">Your Bookmarklet</a>
-                </p>
-                <p class="advice">
-                If you want to return to this editor with your bookmark or
-                share it with others, here's that link you'll need:<br>
-                    <a
-                        href="#label=&url=javascript%3Aalert%28%2522Hello%2C%2520World%21%2522%29%3B"
-                        id="link-to-editor" class="link">Your Bookmarklet —
-                        Bookmarklet Editor</a>
-                </p>
-                <hr>
-                <p>
-                Enjoy! <a href="https://github.com/netj"><img
-                    src="http://www.gravatar.com/avatar/697258b43bbf3d4e86853b6062e42217.png"
-                    alt="~netj" style="height:20px; vertical-align:top;"></a>
-                </p>
-                <p class="advice">
-                P.S. source code for this editor is available at <a
-                    href="https://github.com/netj/webutils/tree/gh-pages/BookmarkletEditor"><img
-                    src="https://github.com/favicon.ico" type="image/x-icon"
-                    style="vertical-align:top; margin-right:2px;"
-                    alt="">GitHub</a>.
-                </p>
-                </ul>
-            </div>
-        </div>
+        .CodeMirror-gutter {
+          .border-radius(@inputBorderRadius 0 0 @inputBorderRadius);
+        }
+        .CodeMirror-scroll {
+          height: auto;
+          overflow-y: hidden;
+          overflow-x: auto;
+        }
+      }
+    </style>
+    <script type="text/javascript" src="http://lesscss.googlecode.com/files/less-1.3.0.min.js"></script>
+  </head>
 
-        <div id="saved-pane">
-            <div id="githubAuth">
-                <input type="text" id="githubUser">
-                <input type="password" id="githubPassword">
-                <button id="githubLogin">Login to GitHub</button>
-            </div>
-            <ul id="gists">
+  <body data-spy="scroll">
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <div class="pull-right">
+            <ul class="nav">
+              <li><a href="https://github.com/netj/webutils/tree/gh-pages/BookmarkletEditor"
+                  title="Fork me at GitHub"
+                  ><i class="icon-wrench icon-white"></i></a></li>
+              <li><a href="https://github.com/netj"
+                  title="Created by netj"
+                  ><img src="http://www.gravatar.com/avatar/697258b43bbf3d4e86853b6062e42217.png"
+                  alt="~netj" style="height:20px; vertical-align:text-bottom;"></a></li>
             </ul>
+            <a class="brand" href="http://netj.github.com/webutils/BookmarkletEditor/"
+              ><img src="bookmarklet-editor.png" alt="">Bookmarklet Editor</a>
+          </div>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="#stage"><i class="icon-bookmark icon-white"></i>
+                  <span id="navbar-bookmarklet-title" >Example Bookmarklet</span></a></li>
+              <li><a href="#edit-code"><i class="icon-edit icon-white"></i> Edit Code</a></li>
+              <li><a href="#describe"><i class="icon-pencil icon-white"></i> Describe</a></li>
+              <li><a href="#paste-copy"><i class="icon-share-alt icon-white"></i> Paste or Copy</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+
+        <div id="stage" class="span9">
+
+          <!-- Result -->
+          <div class="well hero-unit">
+            <h1><a href="javascript:alert(%22Hello,%20World!%22);"
+                id="bookmarklet-link" class="link">Example Bookmarklet</a></h1>
+            <br>
+            <p id="bookmarklet-description"></p>
+            <hr>
+            <p>
+            The link above is your bookmarklet.  Simply drag it to your
+            bookmarks and use it when you need it!
+            <!-- TODO explain what a bookmarklet is -->
+            </p>
+          </div>
+
+          <div id="edit-code" class="row-fluid">
+            <h2>Edit Code</h2>
+            <div class="well">
+              <textarea id="code" rows="10" cols="80">alert("Hello, World!");</textarea>
+            </div>
+          </div>
+
+          <div id="describe" class="row-fluid">
+            <h2>Describe your Bookmarklet</h2>
+            <div class="form-horizontal well">
+              <fieldset>
+                <div class="control-group">
+                  <label class="control-label" for="label">Label</label>
+                  <div class="controls">
+                    <div class="input-prepend">
+                      <span class="add-on"><i class="icon-tag"></i></span
+                        ><input type="text" id="label" class="input-xlarge" value="">
+                    </div>
+                    <p class="help-block"></p>
+                  </div>
+                </div>
+                <div class="control-group">
+                  <label class="control-label" for="description">Description</label>
+                  <div class="controls">
+                    <div class="input-prepend">
+                      <span class="add-on"><i class="icon-comment"></i></span
+                        ><input type="text" id="description" class="input-xxlarge" value="">
+                    </div>
+                    <p class="help-block">Describe what your bookmarklet is good for and where it can be used.</p>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+
+          <div id="paste-copy" class="row-fluid">
+            <h2>Paste or Copy your Bookmarklet URL</h2>
+            <div class="form-horizontal well">
+              <fieldset>
+                <div class="control-group">
+                  <label class="control-label" for="bookmarklet">URL</label>
+                  <div class="controls">
+                    <div class="input-prepend">
+                      <span class="add-on"><i class="icon-globe"></i></span
+                        ><input type="text" id="bookmarklet" class="input-xxlarge"
+                        value="javascript:alert(%22Hello,%20World!%22);">
+                    </div>
+                    <p class="help-block">
+                      You can paste your existing bookmarklet
+                      <code>javascript:</code> URL here and edit its code, or
+                      simply copy it to somewhere else.
+                    </p>
+                    <p class="help-block">
+                      If you want to return to this editor later, or let
+                      others edit this bookmarklet as well, here's that link
+                      you need to keep:
+                      <a
+                        href="#label=&url=javascript%3Aalert%28%2522Hello%2C%2520World%21%2522%29%3B"
+                        id="link-to-editor" class="link">Example Bookmarklet —
+                        Bookmarklet Editor</a>.
+                    </p>
+                  </div>
+                  <p class="help-block"></p>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+
         </div>
 
-        <script type="text/coffeescript">
-            editor = null
 
-            encode = ->
-                bklet = "javascript:" + encodeURI editor.getValue()
-                $("#bookmarklet")
-                    .val(bklet)
-                updateContents()
+        <!-- From Gists -->
 
-            decode = ->
-                bklet = this.value.replace /^\s*javascript:\s*/i, ""
-                js = decodeURI bklet
-                editor.setValue(js)
-                updateContents()
+        <div id="saved-pane" class="span3">
+          <h2>
+            On <a href="https://gist.github.com/"><img id="gist-logo"
+              src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logo_gist.png?1315867479"></a>
+          </h2>
+          <h3>Saved Bookmarklets</h3>
+          <form class="well form" id="githubAuth">
+            <input class="input" type="text" id="githubUser" placeholder="Username">
+            <input class="input" type="password" id="githubPassword" placeholder="Password">
+            <button type="submit" class="btn" id="githubLogin">Sign in to GitHub</button>
+          </form>
+          <ul id="gists">
+          </ul>
+          <!--
+          <button class="btn" id="githubLogout">Sign out</button>
+          -->
+        </div>
 
-            encodeHash = (label, bklet) ->
-                hash  = ""
-                hash += "label="+ encodeURIComponent label
-                hash += "&"
-                hash += "url="  + encodeURIComponent bklet
-                location.hash = "#" + (
-                    unless typeof btoa == "function" then hash
-                    else if hash.match /%[8-9A-F][0-9A-F]/i then "base64,#{btoa hash}"
-                    else hash
-                )
+      </div>
 
+    </div>
 
-            decodeHash = ->
-                if location.hash and location.hash.length > 1
-                    hash = location.hash.substring 1
-                    if m = hash.match /^base64,(.*)$/
-                        hash = atob m[1]
-                    args = {}
-                    for pair in hash.split /&/
-                        nv = pair.split "=", 2
-                        args[nv[0]] = decodeURIComponent nv[1]
-                    $("#bookmarklet")
-                        .val(args.url)
-                        .trigger("change")
-                    $("#bookmarklet-label")
-                        .val(args.label)
-                        .trigger("change")
-                else
-                    updateContents()
+    <script type="text/coffeescript">
+      editor = null
 
-            updateContents = ->
-                bklet = $("#bookmarklet").val()
-                label = $("#bookmarklet-label").val()
-                nonemptyLabel = label || "Your Bookmarklet"
-                $("#bookmarklet-link")
-                    .attr("href", bklet)
-                    .text(nonemptyLabel)
-                title = "#{if label?.length then "#{label} — " else ""}Bookmarklet Editor"
-                nonemptyTitle = "#{nonemptyLabel} — Bookmarklet Editor"
-                encodeHash label, bklet
-                document.title = title
-                $("#link-to-editor")
-                    .attr("href", location.href)
-                    .text(nonemptyTitle)
+      encode = ->
+        bklet = "javascript:" + encodeURI editor.getValue()
+        $("#bookmarklet")
+          .val(bklet)
+        updateContents()
 
-            $ ->
-                # setup UI
-                $("#bookmarklet-label")
-                    .keyup(updateContents)
-                    .change(updateContents)
-                $("#bookmarklet")
-                    .keyup(decode)
-                    .change(decode)
-                editor = CodeMirror.fromTextArea $("#code")[0],
-                    lineWrapping: true
-                    lineNumbers: true
-                    matchBrackets: true
-                    onChange: encode
-                # load info from URL
-                decodeHash()
+      decode = ->
+        bklet = this.value.replace /^\s*javascript:\s*/i, ""
+        js = decodeURI bklet
+        editor.setValue(js)
+        updateContents()
+
+      encodeHash = (label, bklet, descr) ->
+        hash  = ""
+        hash += "label="+ encodeURIComponent label
+        hash += "&"
+        hash += "url="  + encodeURIComponent bklet
+        hash += "&"
+        hash += "description="  + encodeURIComponent descr
+        location.hash = "#" + (
+          unless typeof btoa == "function" then hash
+          else if hash.match /%[8-9A-F][0-9A-F]/i then "base64,#{btoa hash}"
+          else hash
+        )
 
 
-            ## Gist storage
-            gistList = $("ul#gists")
+      decodeHash = ->
+        if location.hash and location.hash.length > 1
+          hash = location.hash.substring 1
+          if m = hash.match /^base64,(.*)$/
+            hash = atob m[1]
+          args = {}
+          for pair in hash.split /&/
+            nv = pair.split "=", 2
+            args[nv[0]] = decodeURIComponent nv[1]
+          $("#bookmarklet")
+            .val(args.url)
+            .trigger("change")
+          $("#label")
+            .val(args.label)
+            .trigger("change")
+          $("#description")
+            .val(args.description)
+            .trigger("change")
+        else
+          updateContents()
 
-            authenticateWithGitHub = (githubUserId, githubPassword) ->
-                $.ajax
-                    url: "https://api.github.com/authorizations"
-                    type: "POST"
-                    contentType: "application/json"
-                    processData: false
-                    data: JSON.stringify {
-                            scopes:["gist"]
-                            note:"Bookmarklet Editor"
-                            note_url:"http://netj.github.com/webutils/BookmarkletEditor/"
-                        }
-                    headers:
-                        Authorization: "Basic #{btoa("#{githubUserId}:#{githubPassword}")}"
-                    dataType: "json"
-                    success: (res) ->
-                        console.log res
-                        localStorage.githubAccessToken = res.token
-                        loadSavedGists res.token
+      updateContents = ->
+        bklet = $("#bookmarklet").val()
+        label = $("#label").val()
+        descr = $("#description").val()
+        nonemptyLabel = label || "Example Bookmarklet"
+        $("#bookmarklet-link")
+          .attr("href", bklet)
+          .text(nonemptyLabel)
+        $("#navbar-bookmarklet-title")
+          .text(nonemptyLabel)
+        $("#bookmarklet-description")
+          .text(descr)
+        title = "#{if label?.length then "#{label} — " else ""}Bookmarklet Editor"
+        nonemptyTitle = "#{nonemptyLabel} — Bookmarklet Editor"
+        encodeHash label, bklet, descr
+        document.title = title
+        $("#link-to-editor")
+          .attr("href", location.href)
+          .text(nonemptyTitle)
 
-            loadSavedGists = (access_token) ->
-                $.getJSON "https://api.github.com/gists?access_token=#{access_token}", (gists) ->
-                    for gist in gists
-                        $("<li>")
-                            .attr(title: gist.id)
-                            .text(gist.description + gist.files)
-                            .appendTo(gistList)
-                    gistList.css(display:"")
-                    $("#githubAuth").remove()
-                .fail (err) ->
-                    gistList.css(display:"none")
+      $ ->
+        # setup UI
+        $("#label, #description")
+          .keyup(updateContents)
+          .change(updateContents)
+        $("#bookmarklet")
+          .keyup(decode)
+          .change(decode)
+        editor = CodeMirror.fromTextArea $("#code")[0],
+          lineWrapping: true
+          lineNumbers: true
+          matchBrackets: true
+          onChange: encode
+        # prevent navbar links from breaking location hash
+        navbarHeight = $(".navbar")[0].offsetHeight
+        $win = $(window)
+        $(".nav a[href^='#']")
+          .each( ->
+            jumpTo = $(this.getAttribute "href")[0]
+            #this.removeAttribute "href"
+            $(this).click((event) ->
+              jumpTo.scrollIntoView()
+              $win.scrollTop($win.scrollTop() - navbarHeight - 10)
+              event.preventDefault()
+            )
+          )
+        # load info from URL
+        decodeHash()
 
-            $ ->
-                $("#githubLogin").click ->
-                    authenticateWithGitHub $("#githubUser").val(), $("#githubPassword").val()
-                # load saved bookmarklets from GitHub gists
-                if localStorage.githubAccessToken?
-                    loadSavedGists localStorage.githubAccessToken
-                else
-                    gistList.css(display:"none")
 
-        </script>
+      ## Gist storage
+      gistList = $("ul#gists")
 
-        <!-- Google Analytics -->
-        <script type="text/javascript">
-        
-          var _gaq = _gaq || [];
-          _gaq.push(['_setAccount', 'UA-29293848-1']);
-          _gaq.push(['_trackPageview']);
-        
-          (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-          })();
-        
-        </script>
-    </body>
+      authenticateWithGitHub = (githubUserId, githubPassword) ->
+        $.ajax
+          url: "https://api.github.com/authorizations"
+          type: "POST"
+          contentType: "application/json"
+          processData: false
+          data: JSON.stringify {
+              scopes:["gist"]
+              note:"Bookmarklet Editor"
+              note_url:"http://netj.github.com/webutils/BookmarkletEditor/"
+            }
+          headers:
+            Authorization: "Basic #{btoa("#{githubUserId}:#{githubPassword}")}"
+          dataType: "json"
+          success: (res) ->
+            console.log res
+            localStorage.githubAccessToken = res.token
+            loadSavedGists res.token
+
+      loadSavedGists = (access_token) ->
+        $.getJSON "https://api.github.com/gists?access_token=#{access_token}", (gists) ->
+          for gist in gists
+            $("<li>")
+              .attr(title: gist.id)
+              .text(gist.description + gist.files)
+              .appendTo(gistList)
+          gistList.css(display:"")
+          $("#githubAuth").remove()
+        .fail (err) ->
+          gistList.css(display:"none")
+
+      $ ->
+        doLogin = (event) ->
+          authenticateWithGitHub $("#githubUser").val(), $("#githubPassword").val()
+          event.preventDefault()
+        $("#githubLoginForm").submit doLogin
+        $("#githubLogin").click doLogin
+        # load saved bookmarklets from GitHub gists
+        if localStorage.githubAccessToken?
+          loadSavedGists localStorage.githubAccessToken
+        else
+          gistList.css(display:"none")
+
+    </script>
+
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-29293848-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+       })();
+
+    </script>
+  </body>
 </html>
 <!--
 Artwork is a remix of following images:
@@ -290,4 +398,6 @@ Artwork is a remix of following images:
 * <http://findicons.com/icon/62870/knewstuff>
 
 Favicon is generated using: <http://tools.dynamicdrive.com/favicon/>
+
+vim:ft=html:sw=2:sts=2:ts=8:et
 -->

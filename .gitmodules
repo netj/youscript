@@ -1,3 +1,6 @@
 [submodule "BookmarkletEditor/codemirror2"]
 	path = BookmarkletEditor/codemirror2
 	url = git://github.com/marijnh/CodeMirror2
+[submodule "BookmarkletEditor/bootstrap"]
+	path = BookmarkletEditor/bootstrap
+	url = git://github.com/twitter/bootstrap.git
