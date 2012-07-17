@@ -209,17 +209,25 @@
             On <a href="https://gist.github.com/"><img id="gist-logo"
               src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logo_gist.png?1315867479"></a>
           </h2>
-          <h3>Saved Bookmarklets</h3>
-          <form class="well form" id="githubAuth">
-            <input class="input" type="text" id="githubUser" placeholder="Username">
+          <form class="well form" id="githubSignInForm">
+            <input class="input" type="text" id="githubLogin" placeholder="Username">
             <input class="input" type="password" id="githubPassword" placeholder="Password">
-            <button type="submit" class="btn" id="githubLogin">Sign in to GitHub</button>
+            <button type="submit" class="btn btn-primary" id="githubSignIn">Sign in to GitHub</button>
           </form>
-          <ul id="gists">
-          </ul>
-          <!--
-          <button class="btn" id="githubLogout">Sign out</button>
-          -->
+          <div id="gists" style="display:none;" class="container-fluid form">
+            <h3>Actions</h3>
+            <button id="update-gist" class="btn btn-primary">Update Gist</button>
+            <button id="fork-gist" class="btn btn-primary">Fork Gist</button>
+            <button id="create-new-gist" class="btn">Save as new Gist</button>
+
+            <h3><span id="githubSignInUser">Github User</span>'s Bookmarklets
+              <button class="btn btn-mini" id="githubSignOut">Sign out</button></h3>
+            <ul>
+            </ul>
+
+            <input type="text" id="gist-id" class="input-small" placeholder="Gist ID">
+            <button id="load-gist" class="btn btn-small">Load Gist</button>
+          </div>
         </div>
 
       </div>
@@ -227,6 +235,7 @@
     </div>
 
     <script type="text/coffeescript">
+      ## editor
       editor = null
 
       encode = ->
@@ -304,7 +313,7 @@
         $("#bookmarklet")
           .keyup(decode)
           .change(decode)
-        editor = CodeMirror.fromTextArea $("#code")[0],
+        window.editor = editor = CodeMirror.fromTextArea $("#code")[0],
           lineWrapping: true
           lineNumbers: true
           matchBrackets: true
@@ -324,53 +333,130 @@
           )
         # load info from URL
         decodeHash()
+      </script>
 
 
+
+      <script type="text/coffeescript">
       ## Gist storage
-      gistList = $("ul#gists")
+      gistPane = $("#gists")
+      gistList = gistPane.find("ul")
 
-      authenticateWithGitHub = (githubUserId, githubPassword) ->
+      githubAPI = (method = "GET", path = "/", data = null, headers = null) ->
         $.ajax
-          url: "https://api.github.com/authorizations"
-          type: "POST"
+          type: method
+          url: "https://api.github.com#{path}"
           contentType: "application/json"
           processData: false
-          data: JSON.stringify {
+          data: if data? then JSON.stringify data
+          headers: headers
+          dataType: "json"
+
+      loadGist = (gistId) ->
+        $("#gist-id").val(gistId)
+        githubAPI("GET", "/gists/#{gistId}")
+          .success (gist) ->
+            # decode gist
+            code = null
+            for lang in "js,coffee".split /,/
+              break if (code = gist.files?["bookmarklet.#{lang}"]?.content)?
+            # TODO fail unless code?
+            [label, descr] = gist.description.split /\n/, 2
+            # update UI
+            window.editor.setValue(code)
+            $("#label").val(label)
+            $("#description")
+              .val(descr)
+              .change()
+          # TODO .fail ...
+
+      loadGistsList = (access_token = localStorage.githubAccessToken) ->
+        handleAuthError = (err) ->
+          gistPane.css(display:"none")
+        # TODO githubAPI
+        $.getJSON "https://api.github.com/user?access_token=#{access_token}", (user) ->
+            $("#githubSignInUser", gistPane)
+              .text(user.login)
+          .fail handleAuthError
+        # TODO githubAPI
+        $.getJSON "https://api.github.com/gists?access_token=#{access_token}", (gists) ->
+            gistList.find("li").remove()
+            for gist in gists when gist.files?["bookmarklet.js"]? # TODO bookmarklet.#{lang}
+              do (gist) ->
+                console.log gist
+                $("<li>")
+                  .attr(title: gist.id)
+                  .append(
+                    $("<a>")
+                      .attr(href: "#gist=#{gist.id}")
+                      .text(gist.description)
+                      .click((event) ->
+                          loadGist gist.id
+                          event.preventDefault()
+                        )
+                  )
+                  .appendTo(gistList)
+            gistPane.css(display:"")
+            $("#githubSignInForm").remove()
+          .fail handleAuthError
+
+      createNewGist = (label, description, code, lang = "js") ->
+        files = {}
+        files["bookmarklet.#{lang}"] =
+          content: code
+        githubAPI "POST", "/gists",
+              description: "#{label}\n#{description}"
+              public: true
+              files: files
+            ,
+              Authorization: "token #{localStorage.githubAccessToken}"
+          .success (newGist) ->
+            # get new gist ID from res and update UI
+            console.log newGist
+            loadGist newGist.id
+            # TODO add it directly to the list
+            setTimeout loadGistsList, 1000
+          # TODO .fail handleError
+
+      authenticateWithGitHub = (githubLogin, githubPassword) ->
+        githubAPI "POST", "/authorizations",
               scopes:["gist"]
               note:"Bookmarklet Editor"
               note_url:"http://netj.github.com/webutils/BookmarkletEditor/"
-            }
-          headers:
-            Authorization: "Basic #{btoa("#{githubUserId}:#{githubPassword}")}"
-          dataType: "json"
-          success: (res) ->
-            console.log res
+            ,
+              Authorization: "Basic #{btoa("#{githubLogin}:#{githubPassword}")}"
+          .success (res) ->
             localStorage.githubAccessToken = res.token
-            loadSavedGists res.token
-
-      loadSavedGists = (access_token) ->
-        $.getJSON "https://api.github.com/gists?access_token=#{access_token}", (gists) ->
-          for gist in gists
-            $("<li>")
-              .attr(title: gist.id)
-              .text(gist.description + gist.files)
-              .appendTo(gistList)
-          gistList.css(display:"")
-          $("#githubAuth").remove()
-        .fail (err) ->
-          gistList.css(display:"none")
+            loadGistsList res.token
 
       $ ->
-        doLogin = (event) ->
-          authenticateWithGitHub $("#githubUser").val(), $("#githubPassword").val()
+        # sign in/out events
+        doSignIn = (event) ->
+          authenticateWithGitHub $("#githubLogin").val(), $("#githubPassword").val()
           event.preventDefault()
-        $("#githubLoginForm").submit doLogin
-        $("#githubLogin").click doLogin
+        $("#githubSignInForm").submit doSignIn
+        $("#githubSignIn").click doSignIn
+        doSignOut = (event) ->
+          # TODO DELETE /authorizations/:id
+          delete localStorage.githubAccessToken
+        $("#githubSignOut").click doSignOut
+
+        # create new gist
+        $("#create-new-gist").click (event) ->
+          label = $("#label").val()
+          descr = $("#description").val()
+          code = window.editor.getValue()
+          createNewGist label, descr, code
+
+        # load gist
+        $("#load-gist").click (event) ->
+          loadGist $("#gist-id").val()
+
         # load saved bookmarklets from GitHub gists
         if localStorage.githubAccessToken?
-          loadSavedGists localStorage.githubAccessToken
+          loadGistsList localStorage.githubAccessToken
         else
-          gistList.css(display:"none")
+          gistPane.css(display:"none")
 
     </script>
 
