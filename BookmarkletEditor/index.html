@@ -72,6 +72,22 @@
           overflow-x: auto;
         }
       }
+
+      .githubAuthRequired {
+        display: none;
+        &.signedIn {
+          display: initial;
+        }
+      }
+
+      .inactive {
+        display: none;
+      }
+
+      #save-share .btn {
+        .pull-right;
+        margin: 0 5px;
+      }
     </style>
     <script type="text/javascript" src="http://lesscss.googlecode.com/files/less-1.3.0.min.js"></script>
   </head>
@@ -199,34 +215,59 @@
             </div>
           </div>
 
+          <div id="save-share" class="row-fluid pull-right">
+            <!--
+            <h2>Save and Share your Bookmarklet</h2>
+            <div class="well">
+            -->
+              <span class="githubAuthRequired">
+                <button id="update-gist" class="btn btn-primary inactive"><i
+                  class="icon-ok icon-white"></i> Update gist: <span
+                    class="current-gist-id"></span></button>
+                <button id="fork-gist" class="btn btn-primary inactive"><i
+                    class="icon-plus icon-white"></i> Fork gist: <span
+                    class="current-gist-id"></span></button>
+              </span>
+              <button id="create-new-gist" class="btn btn-primary"><i
+                  class="icon-plus icon-white"></i> Save as new gist</button>
+              <button type="reset" id="clear" class="btn btn-danger"><i
+                  class="icon-trash icon-white"></i> Clear</button>
+          </div>
+
         </div>
 
 
         <!-- From Gists -->
 
         <div id="saved-pane" class="span3">
-          <h2>
-            On <a href="https://gist.github.com/"><img id="gist-logo"
-              src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logo_gist.png?1315867479"></a>
-          </h2>
-          <form class="well form" id="githubSignInForm">
-            <input class="input" type="text" id="githubLogin" placeholder="Username">
-            <input class="input" type="password" id="githubPassword" placeholder="Password">
-            <button type="submit" class="btn btn-primary" id="githubSignIn">Sign in to GitHub</button>
-          </form>
-          <div id="gists" style="display:none;" class="container-fluid form">
-            <h3>Actions</h3>
-            <button id="update-gist" class="btn btn-primary">Update Gist</button>
-            <button id="fork-gist" class="btn btn-primary">Fork Gist</button>
-            <button id="create-new-gist" class="btn">Save as new Gist</button>
+          <div class="row-fluid">
+            <h2>
+              On <a href="https://gist.github.com/"><img id="gist-logo"
+                src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logo_gist.png?1315867479"></a>
+            </h2>
+            <p>
+              <form class="well form" id="githubSignInForm">
+                <input class="input" type="text" id="githubLogin" placeholder="Username">
+                <input class="input" type="password" id="githubPassword" placeholder="Password">
+                <button type="submit" class="btn btn-primary" id="githubSignIn">Sign in to GitHub</button>
+              </form>
+            </p>
 
-            <h3><span id="githubSignInUser">Github User</span>'s Bookmarklets
-              <button class="btn btn-mini" id="githubSignOut">Sign out</button></h3>
-            <ul>
-            </ul>
+            <div class="githubAuthRequired">
+              <p style="text-align:right;">
+                <span class="input-prepend">
+                  <span class="add-on" for="gist-id">gist:</span><input
+                  type="text" id="gist-id" class="input input-small" placeholder="Gist ID">
+                </span>
+                <button id="load-gist" class="btn btn-small">Load</button>
+              </p>
+              <hr>
 
-            <input type="text" id="gist-id" class="input-small" placeholder="Gist ID">
-            <button id="load-gist" class="btn btn-small">Load Gist</button>
+              <h3><span id="githubSignInUser">Github User</span>'s Bookmarklets
+                <button class="btn btn-mini pull-right" id="githubSignOut">Sign out</button></h3>
+              <ul>
+              </ul>
+            </div>
           </div>
         </div>
 
@@ -263,7 +304,6 @@
           else hash
         )
 
-
       decodeHash = ->
         if location.hash and location.hash.length > 1
           hash = location.hash.substring 1
@@ -282,6 +322,7 @@
           $("#description")
             .val(args.description)
             .trigger("change")
+          # TODO gist-id to args.gist
         else
           updateContents()
 
@@ -318,6 +359,11 @@
           lineNumbers: true
           matchBrackets: true
           onChange: encode
+        $("#clear").click (event) ->
+          $("#label, #description")
+            .val("")
+          editor.setValue("")
+
         # prevent navbar links from breaking location hash
         navbarHeight = $(".navbar")[0].offsetHeight
         $win = $(window)
@@ -336,13 +382,12 @@
       </script>
 
 
-
       <script type="text/coffeescript">
       ## Gist storage
-      gistPane = $("#gists")
-      gistList = gistPane.find("ul")
+      gistList = $("#saved-pane ul")
 
-      githubAPI = (method = "GET", path = "/", data = null, headers = null) ->
+      githubAPI = (method = "GET", path = "/", data = null, headers = {}) ->
+        headers.Authorization ?= "token #{localStorage.githubAccessToken}"
         $.ajax
           type: method
           url: "https://api.github.com#{path}"
@@ -352,94 +397,163 @@
           headers: headers
           dataType: "json"
 
+      # add front matter comments with bookmarklet editor URL
+      exportCode = (code) ->
+        """
+        /* Created with YouScript Bookmarklet Editor
+         * http://netj.github.com/youscript
+         */
+
+
+        """ + code
+      importCode = (code) ->
+        pair = code.split /\n\n/, 2
+        if pair.length == 2
+          [frontmatter, code] = pair
+        code
+
+      encodeToGist = (label, description, code) ->
+        files = {}
+        files["bookmarklet.js"] =
+          content: exportCode code
+        gist =
+          description: "#{label.replace(/—/g, "——")} — #{description}"
+          files: files
+
+      decodeFromGist = (gist) ->
+        code = gist.files?["bookmarklet.js"]?.content
+        # TODO fail unless code?
+        code = importCode code if code?
+        console.log code
+        [label, description] = gist.description.split " — ", 2
+        label = label.replace(/——/g, "—")
+        isOwner = gist.user.login == localStorage.githubUserLogin
+        
+        [label, description, code, isOwner]
+
+      updateUI = (label, description, code, isOwner) ->
+        window.editor.setValue(code)
+        $("#label").val(label)
+        $("#description")
+          .val(description)
+          .change()
+        $(".current-gist-id")
+          .text(gist.id)
+        # action buttons
+        $("#update-gist").toggleClass("inactive",  isOwner)
+        $("#fork-gist"  ).toggleClass("inactive", !isOwner)
+        $("#create-new-gist").addClass("inactive")
+
       loadGist = (gistId) ->
         $("#gist-id").val(gistId)
         githubAPI("GET", "/gists/#{gistId}")
           .success (gist) ->
-            # decode gist
-            code = null
-            for lang in "js,coffee".split /,/
-              break if (code = gist.files?["bookmarklet.#{lang}"]?.content)?
-            # TODO fail unless code?
-            [label, descr] = gist.description.split /\n/, 2
-            # update UI
-            window.editor.setValue(code)
-            $("#label").val(label)
-            $("#description")
-              .val(descr)
-              .change()
+            window.gist = gist
+            console.log "loadGist", gist
+            updateUI (decodeFromGist gist)...
           # TODO .fail ...
 
+      unloadGist = ->
+        # disassociate gist
+        $(".current-gist-id").text("")
+        $("#update-gist").addClass("inactive")
+        $("#fork-gist"  ).addClass("inactive")
+        $("#create-new-gist").removeClass("inactive")
+
+      createNewGist = (bookmarklet...) ->
+        gist = encodeToGist bookmarklet...
+        gist.public ?= true # TODO private gist
+        githubAPI("POST", "/gists", gist)
+          .success (newGist) ->
+            # get new gist ID from res and update UI
+            console.log "create", newGist
+            updateUI (decodeFromGist newGist)...
+            # TODO add it directly to the list
+            setTimeout loadGistsList, 1000
+          # TODO .fail handleError
+
+      updateGist = (bookmarklet...) ->
+        id = $(".current-gist-id").first().text()
+        gist = encodeToGist bookmarklet...
+        githubAPI("PATCH", "/gists/#{id}", gist)
+          .success (newGist) ->
+            console.log "update", newGist
+            updateUI (decodeFromGist newGist)...
+            setTimeout loadGistsList, 1000
+          # TODO .fail handleError
+
+      forkGist = (bookmarklet...) ->
+        id = $(".current-gist-id").first().text()
+        gist = encodeToGist bookmarklet...
+        githubAPI("POST", "/gists/#{id}/fork", gist)
+          .success (newGist) ->
+            # TODO Location: header
+            console.log "fork", newGist
+            updateUI (decodeFromGist newGist)...
+            setTimeout loadGistsList, 1000
+          # TODO .fail handleError
+
       loadGistsList = (access_token = localStorage.githubAccessToken) ->
-        handleAuthError = (err) ->
-          gistPane.css(display:"none")
-        # TODO githubAPI
-        $.getJSON "https://api.github.com/user?access_token=#{access_token}", (user) ->
-            $("#githubSignInUser", gistPane)
+        handleListError = (err) ->
+          signOutFromGithub()
+        githubAPI("GET", "/user")
+          .success (user) ->
+            $("#githubSignInUser")
               .text(user.login)
-          .fail handleAuthError
-        # TODO githubAPI
-        $.getJSON "https://api.github.com/gists?access_token=#{access_token}", (gists) ->
+          .fail handleListError
+        githubAPI("GET", "/gists")
+          .success (gists) ->
             gistList.find("li").remove()
-            for gist in gists when gist.files?["bookmarklet.js"]? # TODO bookmarklet.#{lang}
+            for gist in gists when gist.files?["bookmarklet.js"]?
               do (gist) ->
-                console.log gist
+                console.log "list", gist
+                [label, description] = decodeFromGist gist
                 $("<li>")
-                  .attr(title: gist.id)
+                  .attr(title: "gist: #{gist.id}")
                   .append(
                     $("<a>")
                       .attr(href: "#gist=#{gist.id}")
-                      .text(gist.description)
+                      .append($("<b>").text(label))
                       .click((event) ->
                           loadGist gist.id
                           event.preventDefault()
                         )
                   )
+                  .append("<br>")
+                  .append($("<small>").text(description))
                   .appendTo(gistList)
-            gistPane.css(display:"")
             $("#githubSignInForm").remove()
-          .fail handleAuthError
+            $(".githubAuthRequired").addClass("signedIn")
+          .fail handleListError
 
-      createNewGist = (label, description, code, lang = "js") ->
-        files = {}
-        files["bookmarklet.#{lang}"] =
-          content: code
-        githubAPI "POST", "/gists",
-              description: "#{label}\n#{description}"
-              public: true
-              files: files
-            ,
-              Authorization: "token #{localStorage.githubAccessToken}"
-          .success (newGist) ->
-            # get new gist ID from res and update UI
-            console.log newGist
-            loadGist newGist.id
-            # TODO add it directly to the list
-            setTimeout loadGistsList, 1000
-          # TODO .fail handleError
-
-      authenticateWithGitHub = (githubLogin, githubPassword) ->
+      signInToGithub = (githubLogin, githubPassword) ->
         githubAPI "POST", "/authorizations",
               scopes:["gist"]
               note:"Bookmarklet Editor"
               note_url:"http://netj.github.com/webutils/BookmarkletEditor/"
             ,
-              Authorization: "Basic #{btoa("#{githubLogin}:#{githubPassword}")}"
+              Authorization: "basic #{btoa("#{githubLogin}:#{githubPassword}")}"
           .success (res) ->
             localStorage.githubAccessToken = res.token
             loadGistsList res.token
 
+      signOutFromGithub = ->
+        # TODO DELETE /authorizations/:id
+        delete localStorage.githubAccessToken
+        $(".githubAuthRequired").removeClass("signedIn")
+
       $ ->
         # sign in/out events
         doSignIn = (event) ->
-          authenticateWithGitHub $("#githubLogin").val(), $("#githubPassword").val()
+          signInToGithub $("#githubLogin").val(), $("#githubPassword").val()
           event.preventDefault()
         $("#githubSignInForm").submit doSignIn
         $("#githubSignIn").click doSignIn
-        doSignOut = (event) ->
-          # TODO DELETE /authorizations/:id
-          delete localStorage.githubAccessToken
-        $("#githubSignOut").click doSignOut
+        $("#githubSignOut").click signOutFromGithub
+
+        # load gist
+        $("#load-gist").click (event) ->
+          loadGist $("#gist-id").val()
 
         # create new gist
         $("#create-new-gist").click (event) ->
@@ -447,16 +561,23 @@
           descr = $("#description").val()
           code = window.editor.getValue()
           createNewGist label, descr, code
-
-        # load gist
-        $("#load-gist").click (event) ->
-          loadGist $("#gist-id").val()
+        # update and fork gist
+        $("#update-gist").click (event) ->
+          label = $("#label").val()
+          descr = $("#description").val()
+          code = window.editor.getValue()
+          updateGist label, descr, code
+        $("#fork-gist").click (event) ->
+          label = $("#label").val()
+          descr = $("#description").val()
+          code = window.editor.getValue()
+          forkGist label, descr, code
+        $("#clear").click (event) ->
+          unloadGist()
 
         # load saved bookmarklets from GitHub gists
         if localStorage.githubAccessToken?
           loadGistsList localStorage.githubAccessToken
-        else
-          gistPane.css(display:"none")
 
     </script>
 
