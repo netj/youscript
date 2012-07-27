@@ -295,6 +295,8 @@
 
       encodeHash = (label, bklet, descr) ->
         hash  = ""
+        # XXX can we decouple gist from core editor?
+        hash += "gist=" + encodeURIComponent window.gist.id + "&" if window.gist?.id?
         hash += "label="+ encodeURIComponent label
         hash += "&"
         hash += "url="  + encodeURIComponent bklet
@@ -315,16 +317,15 @@
           for pair in hash.split /&/
             nv = pair.split "=", 2
             args[nv[0]] = decodeURIComponent nv[1]
-          $("#bookmarklet")
-            .val(args.url)
-            .trigger("change")
-          $("#label")
-            .val(args.label)
-            .trigger("change")
-          $("#description")
-            .val(args.description)
-            .trigger("change")
-          # TODO gist-id to args.gist
+          fillUI = ->
+            $("#bookmarklet").val(args.url).change()         if args.url?
+            $("#label").val(args.label).change()             if args.label?
+            $("#description").val(args.description).change() if args.description?
+          # XXX can we decouple gist from core editor?
+          if args.gist?
+            window.loadGist args.gist, fillUI
+          else
+            fillUI()
         else
           updateContents()
 
@@ -354,7 +355,7 @@
             handler.apply this, args...
           , afterIdleSecs * 1000
 
-      $ ->
+      $(window).load ->
         # setup UI
         $("#label, #description")
           .keyup(afterIdle updateContents)
@@ -456,13 +457,14 @@
         $("#fork-gist"  ).toggleClass("inactive", !isOwner)
         $("#create-new-gist").addClass("inactive")
 
-      loadGist = (gistId) ->
+      window.loadGist = (gistId, next) ->
         $("#gist-id").val(gistId)
         githubAPI("GET", "/gists/#{gistId}")
           .success (gist) ->
             window.gist = gist
             console.log "loadGist", gist
             updateUI (decodeFromGist gist)...
+            next?(gist)
           # TODO .fail ...
 
       unloadGist = ->
@@ -554,7 +556,7 @@
         delete localStorage.githubAccessToken
         $(".githubAuthRequired").removeClass("signedIn")
 
-      $ ->
+      $(window).load ->
         # sign in/out events
         doSignIn = (event) ->
           signInToGithub $("#githubLogin").val(), $("#githubPassword").val()
