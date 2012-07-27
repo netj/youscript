@@ -407,10 +407,9 @@
 
         """ + code
       importCode = (code) ->
-        pair = code.split /\n\n/, 2
-        if pair.length == 2
-          [frontmatter, code] = pair
-        code
+        delim = "\n\n"
+        [frontmatter] = code.split delim, 1
+        code.substring (frontmatter.length + delim.length)
 
       encodeToGist = (label, description, code) ->
         files = {}
@@ -424,7 +423,6 @@
         code = gist.files?["bookmarklet.js"]?.content
         # TODO fail unless code?
         code = importCode code if code?
-        console.log code
         [label, description] = gist.description.split " — ", 2
         label = label.replace(/——/g, "—")
         isOwner = gist.user.login == localStorage.githubUserLogin
