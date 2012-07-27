@@ -278,6 +278,7 @@
     <script type="text/coffeescript">
       ## editor
       editor = null
+      afterIdleSecs = 1
 
       encode = ->
         bklet = "javascript:" + encodeURI editor.getValue()
@@ -286,8 +287,9 @@
         updateContents()
 
       decode = ->
-        bklet = this.value.replace /^\s*javascript:\s*/i, ""
-        js = decodeURI bklet
+        bklet = this.value.trim()
+        return if bklet == "javascript:" + encodeURI editor.getValue()
+        js = decodeURI bklet.replace /^\s*javascript:\s*/i, ""
         editor.setValue(js)
         updateContents()
 
@@ -346,23 +348,31 @@
           .attr("href", location.href)
           .text(nonemptyTitle)
 
+      afterIdle = (handler) -> (args...) ->
+        this.afterIdleT = clearTimeout this.afterIdleT if this.afterIdleT?
+        this.afterIdleT = setTimeout =>
+            handler.apply this, args...
+          , afterIdleSecs * 1000
+
       $ ->
         # setup UI
         $("#label, #description")
-          .keyup(updateContents)
+          .keyup(afterIdle updateContents)
           .change(updateContents)
         $("#bookmarklet")
-          .keyup(decode)
+          .keyup(afterIdle decode)
           .change(decode)
         window.editor = editor = CodeMirror.fromTextArea $("#code")[0],
           lineWrapping: true
           lineNumbers: true
           matchBrackets: true
-          onChange: encode
+          onChange: afterIdle encode
+          onBlur: encode
         $("#clear").click (event) ->
+          editor.setValue("")
           $("#label, #description")
             .val("")
-          editor.setValue("")
+          encode()
 
         # prevent navbar links from breaking location hash
         navbarHeight = $(".navbar")[0].offsetHeight
@@ -430,13 +440,17 @@
         [label, description, code, isOwner]
 
       updateUI = (label, description, code, isOwner) ->
+        $(".current-gist-id")
+          .text(window.gist.id)
         window.editor.setValue(code)
-        $("#label").val(label)
+        window.editor.focus()
         $("#description")
           .val(description)
+        $("#label")
+          .val(label)
+          .focus()
           .change()
-        $(".current-gist-id")
-          .text(gist.id)
+        window.editor.focus()
         # action buttons
         $("#update-gist").toggleClass("inactive",  isOwner)
         $("#fork-gist"  ).toggleClass("inactive", !isOwner)
