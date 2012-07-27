@@ -4,3 +4,6 @@
 [submodule "bootstrap"]
 	path = bootstrap
 	url = git://github.com/twitter/bootstrap.git
+[submodule "coffee-script"]
+	path = coffee-script
+	url = git://github.com/jashkenas/coffee-script.git
