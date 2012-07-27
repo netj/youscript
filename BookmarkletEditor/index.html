@@ -295,8 +295,6 @@
 
       encodeHash = (label, bklet, descr) ->
         hash  = ""
-        # XXX can we decouple gist from core editor?
-        hash += "gist=" + encodeURIComponent window.gist.id + "&" if window.gist?.id?
         hash += "label="+ encodeURIComponent label
         hash += "&"
         hash += "url="  + encodeURIComponent bklet
@@ -307,27 +305,25 @@
           else if hash.match /%[8-9A-F][0-9A-F]/i then "base64,#{btoa hash}"
           else hash
         )
+        console.log "encoded hash"
 
-      decodeHash = ->
+      window.parseQueryString = (querystring) ->
+        args = {}
+        for pair in querystring.split /&/
+          nv = pair.split "=", 2
+          args[nv[0]] = decodeURIComponent nv[1]
+        args
+
+      window.decodeHash = ->
         if location.hash and location.hash.length > 1
           hash = location.hash.substring 1
           if m = hash.match /^base64,(.*)$/
             hash = atob m[1]
-          args = {}
-          for pair in hash.split /&/
-            nv = pair.split "=", 2
-            args[nv[0]] = decodeURIComponent nv[1]
-          fillUI = ->
-            $("#bookmarklet").val(args.url).change()         if args.url?
-            $("#label").val(args.label).change()             if args.label?
-            $("#description").val(args.description).change() if args.description?
-          # XXX can we decouple gist from core editor?
-          if args.gist?
-            window.loadGist args.gist, fillUI
-          else
-            fillUI()
-        else
-          updateContents()
+          args = parseQueryString hash
+          $("#bookmarklet").val(args.url).change()         if args.url?
+          $("#label").val(args.label).change()             if args.label?
+          $("#description").val(args.description).change() if args.description?
+          args
 
       updateContents = ->
         bklet = $("#bookmarklet").val()
@@ -383,8 +379,7 @@
             jumpTo = $(this.getAttribute "href")[0]
             #this.removeAttribute "href"
             $(this).click((event) ->
-              jumpTo.scrollIntoView()
-              $win.scrollTop($win.scrollTop() - navbarHeight - 10)
+              $win.scrollTop(jumpTo.offsetTop - navbarHeight - 10)
               event.preventDefault()
             )
           )
@@ -443,28 +438,51 @@
       updateUI = (label, description, code, isOwner) ->
         $(".current-gist-id")
           .text(window.gist.id)
-        window.editor.setValue(code)
-        window.editor.focus()
-        $("#description")
-          .val(description)
-        $("#label")
-          .val(label)
-          .focus()
-          .change()
+        if code?
+          window.editor.setValue(code)
+          window.editor.focus()
+        $("#description").val(description).change() if description?
+        $("#label").val(label).change()    if label?
+        if code?
+          $("#label").focus()
         window.editor.focus()
         # action buttons
         $("#update-gist").toggleClass("inactive",  isOwner)
         $("#fork-gist"  ).toggleClass("inactive", !isOwner)
         $("#create-new-gist").addClass("inactive")
 
-      window.loadGist = (gistId, next) ->
+
+      gistIdFromQueryString = ->
+        if location.search and location.search.length > 1
+          qs = location.search.substring 1
+          args = parseQueryString qs
+          args.gist
+
+      encodeQueryString = ->
+        gistId = gistIdFromQueryString()
+        unless gistId == $("#gist-id").val()
+          location.href = "?gist=#{encodeURIComponent $("#gist-id").val()}" if $("#gist-id").val()
+
+      decodeQueryString = ->
+        gistId = gistIdFromQueryString()
+        if gistId?
+          loadGist gistId, (label, description, code, isOwner) ->
+            if (hashArgs = window.decodeHash())?
+              console.log "keeping populated values from hash"
+              updateUI null, null, null, isOwner
+            else
+              console.log "no hash, populating gist"
+              updateUI label, description, code, isOwner
+
+
+      loadGist = (gistId, next = updateUI) ->
         $("#gist-id").val(gistId)
+        encodeQueryString()
         githubAPI("GET", "/gists/#{gistId}")
           .success (gist) ->
             window.gist = gist
             console.log "loadGist", gist
-            updateUI (decodeFromGist gist)...
-            next?(gist)
+            next (decodeFromGist gist)...
           # TODO .fail ...
 
       unloadGist = ->
@@ -526,12 +544,12 @@
                   .attr(title: "gist: #{gist.id}")
                   .append(
                     $("<a>")
-                      .attr(href: "#gist=#{gist.id}")
+                      .attr(href: "?gist=#{gist.id}")
                       .append($("<b>").text(label))
-                      .click((event) ->
-                          loadGist gist.id
-                          event.preventDefault()
-                        )
+                      #.click((event) ->
+                      #    loadGist gist.id
+                      #    event.preventDefault()
+                      #  )
                   )
                   .append("<br>")
                   .append($("<small>").text(description))
@@ -593,9 +611,12 @@
         if localStorage.githubAccessToken?
           loadGistsList localStorage.githubAccessToken
 
+        # load Gist from URL
+        decodeQueryString()
+
     </script>
 
-    <!-- Google Analytics -->
+    <!-- Google Analytics - ->
     <script type="text/javascript">
 
       var _gaq = _gaq || [];
@@ -609,6 +630,7 @@
        })();
 
     </script>
+    -->
   </body>
 </html>
 <!--
