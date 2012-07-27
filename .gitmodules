@@ -1,6 +1,6 @@
-[submodule "BookmarkletEditor/codemirror2"]
-	path = BookmarkletEditor/codemirror2
+[submodule "codemirror2"]
+	path = codemirror2
 	url = git://github.com/marijnh/CodeMirror2
-[submodule "BookmarkletEditor/bootstrap"]
-	path = BookmarkletEditor/bootstrap
+[submodule "bootstrap"]
+	path = bootstrap
 	url = git://github.com/twitter/bootstrap.git

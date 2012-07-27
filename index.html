@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Bookmarklet Editor</title>
+    <title>YouScript</title>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/png" href="bookmarklet-editor.png">
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.3.1/coffee-script.min.js"
@@ -104,7 +104,7 @@
           </a>
           <div class="pull-right">
             <ul class="nav">
-              <li><a href="https://github.com/netj/webutils/tree/gh-pages/BookmarkletEditor"
+              <li><a href="https://github.com/netj/youscript/"
                   title="Fork me at GitHub"
                   ><i class="icon-wrench icon-white"></i></a></li>
               <li><a href="https://github.com/netj"
@@ -112,8 +112,8 @@
                   ><img src="http://www.gravatar.com/avatar/697258b43bbf3d4e86853b6062e42217.png"
                   alt="~netj" style="height:20px; vertical-align:text-bottom;"></a></li>
             </ul>
-            <a class="brand" href="http://netj.github.com/webutils/BookmarkletEditor/"
-              ><img src="bookmarklet-editor.png" alt="">Bookmarklet Editor</a>
+            <a class="brand" href="http://netj.github.com/youscript/"
+              ><img src="bookmarklet-editor.png" alt="">YouScript</a>
           </div>
           <div class="nav-collapse">
             <ul class="nav">
@@ -206,7 +206,7 @@
                       <a
                         href="#label=&url=javascript%3Aalert%28%2522Hello%2C%2520World%21%2522%29%3B"
                         id="link-to-editor" class="link">Example Bookmarklet —
-                        Bookmarklet Editor</a>.
+                        YouScript</a>.
                     </p>
                   </div>
                   <p class="help-block"></p>
@@ -337,8 +337,8 @@
           .text(nonemptyLabel)
         $("#bookmarklet-description")
           .text(descr)
-        title = "#{if label?.length then "#{label} — " else ""}Bookmarklet Editor"
-        nonemptyTitle = "#{nonemptyLabel} — Bookmarklet Editor"
+        title = "#{if label?.length then "#{label} — " else ""}YouScript"
+        nonemptyTitle = "#{nonemptyLabel} — YouScript"
         encodeHash label, bklet, descr
         document.title = title
         $("#link-to-editor")
@@ -407,7 +407,7 @@
       exportCode = (code) ->
         """
         /* Created with YouScript Bookmarklet Editor
-         * http://netj.github.com/youscript
+         * http://netj.github.com/youscript/
          */
 
 
@@ -561,8 +561,8 @@
       signInToGithub = (githubLogin, githubPassword) ->
         githubAPI "POST", "/authorizations",
               scopes:["gist"]
-              note:"Bookmarklet Editor"
-              note_url:"http://netj.github.com/webutils/BookmarkletEditor/"
+              note:"YouScript Bookmarklet Editor"
+              note_url:"http://netj.github.com/youscript/"
             ,
               Authorization: "basic #{btoa("#{githubLogin}:#{githubPassword}")}"
           .success (res) ->
