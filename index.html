@@ -436,7 +436,7 @@
 
       updateUI = (label, description, code, isOwner) ->
         $(".current-gist-id")
-          .text(window.gist.id)
+          .text(window.gist?.id)
         if code?
           window.editor.setValue(code)
           window.editor.focus()
