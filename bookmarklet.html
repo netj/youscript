@@ -8,10 +8,12 @@
     <script type="text/javascript" src="coffee-script/extras/coffee-script.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"
       latestsrc="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap-collapse.js"></script>
     <script type="text/javascript" src="bootstrap/js/bootstrap-scrollspy.js"></script>
     <script type="text/javascript" src="codemirror2/lib/codemirror.js"></script>
     <script type="text/javascript" src="codemirror2/mode/javascript/javascript.js"></script>
     <link rel="stylesheet" type="text/css" href="codemirror2/lib/codemirror.css">
+    <link href='http://fonts.googleapis.com/css?family=Slackey' rel='stylesheet' type='text/css'>
     <style type="text/less">
       @import "bootstrap/less/bootstrap.less";
       @import "bootstrap/less/responsive.less";
@@ -23,10 +25,16 @@
         }
       }
 
+      .brand {
+        font-family: 'Slackey', serif;
+        font-weight: 400 !important;
+        font-size: 18px !important;
+      }
+
       .brand img {
         height: 22px;
         margin-right: 5px;
-        vertical-align: text-bottom;
+        vertical-align: text-top;
       }
 
       #gist-logo {
@@ -101,8 +109,11 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
+
           <div class="pull-right">
-            <ul class="nav">
+            <a class="brand" href="http://netj.github.com/youscript/"
+              ><img src="bookmarklet-editor.png" alt="">YouScript</a>
+            <ul class="nav nav-collapse">
               <li><a href="https://github.com/netj/youscript/"
                   title="Fork me at GitHub"
                   ><i class="icon-wrench icon-white"></i></a></li>
@@ -111,18 +122,19 @@
                   ><img src="http://www.gravatar.com/avatar/697258b43bbf3d4e86853b6062e42217.png"
                   alt="~netj" style="height:20px; vertical-align:text-bottom;"></a></li>
             </ul>
-            <a class="brand" href="http://netj.github.com/youscript/"
-              ><img src="bookmarklet-editor.png" alt="">YouScript</a>
           </div>
+
+          <ul class="nav">
+            <li class="active"><a href="#stage"><i class="icon-bookmark icon-white"></i>
+                <span id="navbar-bookmarklet-title" >Example Bookmarklet</span></a></li>
+          </ul>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="#stage"><i class="icon-bookmark icon-white"></i>
-                  <span id="navbar-bookmarklet-title" >Example Bookmarklet</span></a></li>
               <li><a href="#edit-code"><i class="icon-edit icon-white"></i> Edit Code</a></li>
               <li><a href="#describe"><i class="icon-pencil icon-white"></i> Describe</a></li>
               <li><a href="#paste-copy"><i class="icon-share-alt icon-white"></i> Paste or Copy</a></li>
             </ul>
-          </div><!--/.nav-collapse -->
+          </div>
         </div>
       </div>
     </div>
