@@ -330,7 +330,7 @@
           hash = location.hash.substring 1
           if m = hash.match /^base64,(.*)$/
             hash = atob m[1]
-          args = parseQueryString hash
+          args = window.parseQueryString hash
           $("#bookmarklet").val(args.url).change()         if args.url?
           $("#label").val(args.label).change()             if args.label?
           $("#description").val(args.description).change() if args.description?
@@ -395,7 +395,7 @@
             )
           )
         # load info from URL
-        decodeHash()
+        window.decodeHash()
       </script>
 
 
@@ -466,7 +466,7 @@
       gistIdFromQueryString = ->
         if location.search and location.search.length > 1
           qs = location.search.substring 1
-          args = parseQueryString qs
+          args = window.parseQueryString qs
           args.gist
 
       encodeQueryString = ->
@@ -477,13 +477,14 @@
       decodeQueryString = ->
         gistId = gistIdFromQueryString()
         if gistId?
-          loadGist gistId, (label, description, code, isOwner) ->
-            if (hashArgs = window.decodeHash())?
-              console.log "keeping populated values from hash"
-              updateUI null, null, null, isOwner
-            else
-              console.log "no hash, populating gist"
-              updateUI label, description, code, isOwner
+          doAfterSigningInToGithub () ->
+            loadGist gistId, (label, description, code, isOwner) ->
+              if (hashArgs = window.decodeHash())?
+                console.log "keeping populated values from hash"
+                updateUI null, null, null, isOwner
+              else
+                console.log "no hash, populating gist"
+                updateUI label, description, code, isOwner
 
 
       loadGist = (gistId, next = updateUI) ->
@@ -536,7 +537,7 @@
             setTimeout loadGistsList, 1000
           # TODO .fail handleError
 
-      loadGistsList = (access_token = localStorage.githubAccessToken) ->
+      loadGistsList = () ->
         handleListError = (err) ->
           signOutFromGithub()
         githubAPI("GET", "/user")
@@ -569,6 +570,14 @@
             $(".githubAuthRequired").addClass("signedIn")
           .fail handleListError
 
+
+      tasksAfterSignIn = []
+      doAfterSigningInToGithub = (next) ->
+        if localStorage.githubAccessToken?
+          setTimeout next, 1
+        else
+          tasksAfterSignIn.push next
+
       signInToGithub = (githubLogin, githubPassword) ->
         githubAPI "POST", "/authorizations",
               scopes:["gist"]
@@ -578,7 +587,8 @@
               Authorization: "basic #{btoa("#{githubLogin}:#{githubPassword}")}"
           .success (res) ->
             localStorage.githubAccessToken = res.token
-            loadGistsList res.token
+            setTimeout next, 1 for next in tasksAfterSignIn
+            tasksAfterSignIn = []
 
       signOutFromGithub = ->
         # TODO DELETE /authorizations/:id
@@ -619,8 +629,7 @@
           unloadGist()
 
         # load saved bookmarklets from GitHub gists
-        if localStorage.githubAccessToken?
-          loadGistsList localStorage.githubAccessToken
+        doAfterSigningInToGithub loadGistsList
 
         # load Gist from URL
         decodeQueryString()
