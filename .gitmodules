@@ -1,9 +1,9 @@
 [submodule "codemirror2"]
 	path = codemirror2
-	url = git://github.com/marijnh/CodeMirror2
+	url = https://github.com/marijnh/CodeMirror2.git
 [submodule "bootstrap"]
 	path = bootstrap
-	url = git://github.com/twitter/bootstrap.git
+	url = https://github.com/twbs/bootstrap.git
 [submodule "coffee-script"]
 	path = coffee-script
-	url = git://github.com/jashkenas/coffee-script.git
+	url = https://github.com/jashkenas/coffee-script.git
