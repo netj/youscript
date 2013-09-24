@@ -1,6 +1,6 @@
 [submodule "codemirror2"]
 	path = codemirror2
-	url = https://github.com/marijnh/CodeMirror2.git
+	url = https://github.com/marijnh/CodeMirror.git
 [submodule "bootstrap"]
 	path = bootstrap
 	url = https://github.com/twbs/bootstrap.git
