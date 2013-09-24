@@ -7,3 +7,6 @@
 [submodule "coffee-script"]
 	path = coffee-script
 	url = https://github.com/jashkenas/coffee-script.git
+[submodule "less"]
+	path = less
+	url = https://github.com/less/less.js.git
