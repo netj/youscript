@@ -246,7 +246,7 @@
     var gistId;
     gistId = gistIdFromQueryString();
     if (gistId != null) {
-      return doAfterSigningInToGithub(function() {
+      return setTimeout(function() {
         return loadGist(gistId, function(label, description, code, isOwner) {
           var hashArgs;
           if ((hashArgs = window.decodeHash()) != null) {
