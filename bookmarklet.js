@@ -150,8 +150,10 @@
     if (headers == null) {
       headers = {};
     }
-    if (headers.Authorization == null) {
-      headers.Authorization = "token " + localStorage.githubAccessToken;
+    if (localStorage.githubAccessToken) {
+      if (headers.Authorization == null) {
+        headers.Authorization = "token " + localStorage.githubAccessToken;
+      }
     }
     return $.ajax({
       type: method,
