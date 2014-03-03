@@ -192,7 +192,7 @@ encodeQueryString = ->
 decodeQueryString = ->
   gistId = gistIdFromQueryString()
   if gistId?
-    doAfterSigningInToGithub () ->
+    setTimeout ->
       loadGist gistId, (label, description, code, isOwner) ->
         if (hashArgs = window.decodeHash())?
           console.log "keeping populated values from hash"
