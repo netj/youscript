@@ -6326,9 +6326,9 @@ a.badge:focus {
   font-size: 18px !important;
 }
 .brand img {
-  height: 22px;
+  vertical-align: top;
+  height: 20px;
   margin-right: 5px;
-  vertical-align: text-top;
 }
 #gist-logo {
   height: 2.5ex;
@@ -6342,6 +6342,9 @@ a.badge:focus {
 }
 .controls .input-prepend input.input-xxlarge {
   width: 85%;
+}
+#code {
+  width: 100%;
 }
 .CodeMirror {
   background-color: #ffffff;
