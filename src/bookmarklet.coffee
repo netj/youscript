@@ -133,7 +133,7 @@ githubAPI = (method = "GET", path = "/", data = null, headers = {}) ->
 exportCode = (code) ->
   """
   /* Created with YouScript Bookmarklet Editor
-   * http://netj.github.com/youscript/
+   * http://netj.github.io/youscript/
    */
 
 
@@ -297,7 +297,7 @@ signInToGithub = (githubLogin, githubPassword) ->
   githubAPI "POST", "/authorizations",
         scopes:["gist"]
         note:"YouScript Bookmarklet Editor"
-        note_url:"http://netj.github.com/youscript/"
+        note_url:"http://netj.github.io/youscript/"
       ,
         Authorization: "basic #{btoa("#{githubLogin}:#{githubPassword}")}"
     .success (res) ->
