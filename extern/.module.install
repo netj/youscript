@@ -1,0 +1,10 @@
+jquery/dist/jquery.min.js                   /
+
+bootstrap/bootstrap/js/bootstrap.min.js     /
+bootstrap/img                               /bootstrap/
+
+codemirror2/lib/codemirror.js               /codemirror2/lib/
+codemirror2/lib/codemirror.css              /codemirror2/lib/
+codemirror2/mode                            /codemirror2/
+
+coffee-script/extras/coffee-script.js       /

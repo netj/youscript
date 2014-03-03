@@ -1,4 +1,20 @@
+*~
 .*.sw?
+.#*
 .DS_Store
-Attic
+
+.build
+/gh-pages
+/*.app
+/youscript-*.tar.gz
+/youscript-*.sh
+/youscript-*.dmg
+
+/.depends/*
+!/.depends/*.depends
+!/.depends/*.commands
+!/.depends/*.paths
+!/.depends/*.test.sh
+!/.depends/*.sh
+!/.depends/*.txt
 

@@ -1,12 +1,18 @@
 [submodule "codemirror2"]
-	path = codemirror2
+	path = extern/codemirror2
 	url = https://github.com/marijnh/CodeMirror.git
 [submodule "bootstrap"]
-	path = bootstrap
+	path = extern/bootstrap
 	url = https://github.com/twbs/bootstrap.git
 [submodule "coffee-script"]
-	path = coffee-script
+	path = extern/coffee-script
 	url = https://github.com/jashkenas/coffee-script.git
 [submodule "less"]
-	path = less
+	path = extern/less
 	url = https://github.com/less/less.js.git
+[submodule "buildkit"]
+	path = buildkit
+	url = https://github.com/netj/buildkit.git
+[submodule "extern/jquery"]
+	path = extern/jquery
+	url = https://github.com/jquery/jquery.git

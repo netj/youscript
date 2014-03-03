@@ -5,16 +5,15 @@
     <title>YouScript</title>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/png" href="bookmarklet-editor.png">
-    <script type="text/javascript" src="coffee-script/extras/coffee-script.js"></script>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
-    <script type="text/javascript" src="bootstrap/js/bootstrap-collapse.js"></script>
-    <script type="text/javascript" src="bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="bootstrap.min.js"></script>
     <script type="text/javascript" src="codemirror2/lib/codemirror.js"></script>
     <script type="text/javascript" src="codemirror2/mode/javascript/javascript.js"></script>
+    <script type="text/javascript" src="codemirror2/mode/coffeescript/coffeescript.js"></script>
+    <script type="text/javascript" src="coffee-script.js"></script>
     <link rel="stylesheet" type="text/css" href="codemirror2/lib/codemirror.css">
     <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Slackey">
-    <link rel="stylesheet" type="text/less" href="bookmarklet.less">
-    <script type="text/javascript" src="less/dist/less-1.3.0.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="bookmarklet.css">
   </head>
 
   <body data-spy="scroll">
@@ -34,7 +33,7 @@
             <ul class="nav nav-collapse">
               <li><a href="https://github.com/netj/youscript/"
                   title="Fork me at GitHub"
-                  ><i class="icon-wrench icon-white"></i></a></li>
+                  ><i class="icon-wrench"></i></a></li>
               <li><a href="https://github.com/netj"
                   title="Created by netj"
                   ><img src="http://www.gravatar.com/avatar/697258b43bbf3d4e86853b6062e42217.png"
@@ -43,14 +42,14 @@
           </div>
 
           <ul class="nav">
-            <li class="active"><a href="#stage"><i class="icon-bookmark icon-white"></i>
+            <li class="active"><a href="#stage"><i class="icon-bookmark"></i>
                 <span id="navbar-bookmarklet-title" >Example Bookmarklet</span></a></li>
           </ul>
           <div class="nav-collapse">
             <ul class="nav">
-              <li><a href="#edit-code"><i class="icon-edit icon-white"></i> Edit Code</a></li>
-              <li><a href="#describe"><i class="icon-pencil icon-white"></i> Describe</a></li>
-              <li><a href="#paste-copy"><i class="icon-share-alt icon-white"></i> Paste or Copy</a></li>
+              <li><a href="#edit-code"><i class="icon-edit"></i> Edit Code</a></li>
+              <li><a href="#describe"><i class="icon-pencil"></i> Describe</a></li>
+              <li><a href="#paste-copy"><i class="icon-share-alt"></i> Paste or Copy</a></li>
             </ul>
           </div>
         </div>
@@ -204,8 +203,7 @@
 
     </div>
 
-    <script type="text/coffeescript" src="bookmarklet.coffee">
-    </script>
+    <script type="text/javascript" src="bookmarklet.js"></script>
 
     <!-- Google Analytics - ->
     <script type="text/javascript">

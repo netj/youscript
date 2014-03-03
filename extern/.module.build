@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -eu
+
+( cd jquery
+[ -s dist/jquery.js ] || {
+    echo >&2 "Building jquery"
+    npm install
+    grunt
+}
+)
+
+( cd bootstrap
+[ -s bootstrap/js/bootstrap.js ] || {
+    echo >&2 "Building bootstrap"
+    npm install
+    make bootstrap-js
+    git config core.excludesfile ../bootstrap.gitignore
+}
+)
+

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -eu
+
+mkdir -p .build
+cd .build
+
+ln -sfn \
+    ../../extern/bootstrap \
+    .
+
+for src in ../*.coffee; do
+    out=${src%.coffee}.js; out=${out##*/}
+    [[ "$src" -nt "$out" ]] || continue
+    echo "Compiling $src"
+    coffee -o . -c -m "$src"
+done
+
+for src in ../*.less; do
+    out=${src%.less}.css; out=${out##*/}
+    [[ "$src" -nt "$out" ]] || continue
+    echo "Compiling $src"
+    lessc "$src" "$out"
+done
