@@ -167,7 +167,7 @@
   };
 
   exportCode = function(code) {
-    return "/* Created with YouScript Bookmarklet Editor\n * http://netj.github.com/youscript/\n */\n\n" + code;
+    return "/* Created with YouScript Bookmarklet Editor\n * http://netj.github.io/youscript/\n */\n\n" + code;
   };
 
   importCode = function(code) {
@@ -364,7 +364,7 @@
     return githubAPI("POST", "/authorizations", {
       scopes: ["gist"],
       note: "YouScript Bookmarklet Editor",
-      note_url: "http://netj.github.com/youscript/"
+      note_url: "http://netj.github.io/youscript/"
     }, {
       Authorization: "basic " + (btoa("" + githubLogin + ":" + githubPassword))
     }).success(function(res) {
