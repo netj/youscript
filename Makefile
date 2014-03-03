@@ -26,3 +26,10 @@ stage-gh-pages-git:
 git add --all .; \
 git add --update .; \
 git status
+
+
+# publish to GitHub
+publish:
+	@set -eu; cd $(STAGEDIR); \
+git commit -a || true; \
+git push github gh-pages
