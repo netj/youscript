@@ -31,5 +31,6 @@ git status
 # publish to GitHub
 publish: polish
 	@set -eu; cd $(STAGEDIR); \
-git commit -a -m "publishing $(shell git describe --tags --always)" || true; \
+git commit -a -m "publishing $(shell git rev-parse HEAD)$(shell \
+	[ `git status --porcelain | wc -l` -eq 0 ] || echo +WIP)" || true; \
 git push github gh-pages
