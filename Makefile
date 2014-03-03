@@ -29,7 +29,7 @@ git status
 
 
 # publish to GitHub
-publish:
+publish: polish
 	@set -eu; cd $(STAGEDIR); \
-git commit -a || true; \
+git commit -a -m "publishing $(PACKAGEVERSION)" || true; \
 git push github gh-pages
