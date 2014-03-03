@@ -118,7 +118,8 @@ $(window).load ->
 gistList = $("#saved-pane ul")
 
 githubAPI = (method = "GET", path = "/", data = null, headers = {}) ->
-  headers.Authorization ?= "token #{localStorage.githubAccessToken}"
+  if localStorage.githubAccessToken
+    headers.Authorization ?= "token #{localStorage.githubAccessToken}"
   $.ajax
     type: method
     url: "https://api.github.com#{path}"
