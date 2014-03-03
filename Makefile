@@ -20,7 +20,7 @@ stage-gh-pages-git:
     git remote add     github https://github.com/netj/youscript.git || true; \
     git remote set-url github https://github.com/netj/youscript.git; \
     git fetch github; \
-    git reset --quiet; \
+    git read-tree github/gh-pages; \
     git checkout --quiet -B gh-pages --track github/gh-pages; \
 }; \
 git add --all .; \
