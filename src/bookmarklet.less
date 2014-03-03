@@ -3,6 +3,9 @@
 @iconSpritePath:      "bootstrap/img/glyphicons-halflings.png";
 @iconWhiteSpritePath: "bootstrap/img/glyphicons-halflings-white.png";
 
+@import "Font-Awesome/less/font-awesome.less";
+@fa-font-path: "Font-Awesome/fonts";
+
 @media screen and (min-width: 980px) {
   body {
     padding-top : 60px;
@@ -25,6 +28,11 @@
 #gist-logo {
   height: 2.5ex;
   vertical-align: middle;
+}
+
+.hero-unit h1 {
+  color: @linkColor;
+  i.fa { margin-right: 0.5ex; }
 }
 
 #bookmarklet { // url

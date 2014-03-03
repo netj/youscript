@@ -22,9 +22,7 @@
       <div class="navbar-inner">
         <div class="container-fluid">
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+            <i class="fa fa-bars"></i>
           </a>
 
           <div class="pull-right">
@@ -33,7 +31,7 @@
             <ul class="nav nav-collapse">
               <li><a href="https://github.com/netj/youscript/"
                   title="Fork me at GitHub"
-                  ><i class="icon-wrench"></i></a></li>
+                  ><i class="fa fa-github-alt"></i></a></li>
               <li><a href="https://github.com/netj"
                   title="Created by netj"
                   ><img src="http://www.gravatar.com/avatar/697258b43bbf3d4e86853b6062e42217.png"
@@ -42,14 +40,14 @@
           </div>
 
           <ul class="nav">
-            <li class="active"><a href="#stage"><i class="icon-bookmark"></i>
+            <li class="active"><a href="#stage"><i class="fa fa-bookmark-o"></i>
                 <span id="navbar-bookmarklet-title" >Example Bookmarklet</span></a></li>
           </ul>
           <div class="nav-collapse">
             <ul class="nav">
-              <li><a href="#edit-code"><i class="icon-edit"></i> Edit Code</a></li>
-              <li><a href="#describe"><i class="icon-pencil"></i> Describe</a></li>
-              <li><a href="#paste-copy"><i class="icon-share-alt"></i> Paste or Copy</a></li>
+              <li><a href="#edit-code"><i class="fa fa-edit"></i> Edit Code</a></li>
+              <li><a href="#describe"><i class="fa fa-comment-o"></i> Describe</a></li>
+              <li><a href="#share"><i class="fa fa-share-square-o"></i> Share</a></li>
             </ul>
           </div>
 
@@ -64,7 +62,7 @@
 
           <!-- Result -->
           <div class="well hero-unit">
-            <h1><a href="javascript:alert(%22Hello,%20World!%22);"
+            <h1><i class="fa fa-bookmark"></i><a href="javascript:alert(%22Hello,%20World!%22);"
                 id="bookmarklet-link" class="link">Example Bookmarklet</a></h1>
             <br>
             <p id="bookmarklet-description"></p>
@@ -77,21 +75,21 @@
           </div>
 
           <div id="edit-code" class="row-fluid">
-            <h2>Edit Code</h2>
+            <h2><i class="fa fa-edit"></i> Edit Code</h2>
             <div class="well">
               <textarea id="code" rows="1" cols="80">alert("Hello, World!");</textarea>
             </div>
           </div>
 
           <div id="describe" class="row-fluid">
-            <h2>Describe your Bookmarklet</h2>
+            <h2><i class="fa fa-comment-o"></i> Describe your Bookmarklet</h2>
             <div class="form-horizontal well">
               <fieldset>
                 <div class="control-group">
                   <label class="control-label" for="label">Label</label>
                   <div class="controls">
                     <div class="input-prepend">
-                      <span class="add-on"><i class="icon-tag"></i></span
+                      <span class="add-on"><i class="fa fa-tag"></i></span
                         ><input type="text" id="label" class="input-xlarge" value="">
                     </div>
                     <p class="help-block"></p>
@@ -101,7 +99,7 @@
                   <label class="control-label" for="description">Description</label>
                   <div class="controls">
                     <div class="input-prepend">
-                      <span class="add-on"><i class="icon-comment"></i></span
+                      <span class="add-on"><i class="fa fa-comment"></i></span
                         ><input type="text" id="description" class="input-xxlarge" value="">
                     </div>
                     <p class="help-block">Describe what your bookmarklet is good for and where it can be used.</p>
@@ -112,14 +110,14 @@
           </div>
 
           <div id="paste-copy" class="row-fluid">
-            <h2>Paste or Copy your Bookmarklet URL</h2>
+            <h2><i class="fa fa-share-square-o"></i> Share your Bookmarklet URL</h2>
             <div class="form-horizontal well">
               <fieldset>
                 <div class="control-group">
                   <label class="control-label" for="bookmarklet">URL</label>
                   <div class="controls">
                     <div class="input-prepend">
-                      <span class="add-on"><i class="icon-globe"></i></span
+                      <span class="add-on"><i class="fa fa-globe"></i></span
                         ><input type="text" id="bookmarklet" class="input-xxlarge"
                         value="javascript:alert(%22Hello,%20World!%22);">
                     </div>
@@ -151,16 +149,16 @@
             -->
               <span class="githubAuthRequired">
                 <button id="update-gist" class="btn btn-primary inactive"><i
-                  class="icon-ok icon-white"></i> Update gist: <span
+                  class="fa fa-cloud-upload"></i> Update gist: <span
                     class="current-gist-id"></span></button>
                 <button id="fork-gist" class="btn btn-primary inactive"><i
-                    class="icon-plus icon-white"></i> Fork gist: <span
+                    class="fa fa-code-fork"></i> Fork gist: <span
                     class="current-gist-id"></span></button>
               </span>
               <button id="create-new-gist" class="btn btn-primary"><i
-                  class="icon-plus icon-white"></i> Save as new gist</button>
+                  class="fa fa-plus"></i> Save as new gist</button>
               <button type="reset" id="clear" class="btn btn-danger"><i
-                  class="icon-trash icon-white"></i> Clear</button>
+                  class="fa fa-trash-o"></i> Clear</button>
           </div>
 
         </div>
@@ -178,22 +176,22 @@
               <form class="well form" id="githubSignInForm">
                 <input class="input" type="text" id="githubLogin" placeholder="Username">
                 <input class="input" type="password" id="githubPassword" placeholder="Password">
-                <button type="submit" class="btn btn-primary" id="githubSignIn">Sign in to GitHub</button>
+                <button type="submit" class="btn btn-primary" id="githubSignIn"><i class="fa fa-sign-in"></i> Sign in to GitHub</button>
               </form>
             </p>
 
             <div class="githubAuthRequired">
-              <p style="text-align:right;">
+              <div class="form-inline text-right">
                 <span class="input-prepend">
-                  <span class="add-on" for="gist-id">gist:</span><input
+                  <span class="add-on" for="gist-id">Gist:</span><input
                   type="text" id="gist-id" class="input input-small" placeholder="Gist ID">
                 </span>
-                <button id="load-gist" class="btn btn-small">Load</button>
-              </p>
+                <button id="load-gist" class="btn"><i class="fa fa-cloud-download"></i> Load</button>
+              </div>
               <hr>
 
               <h3><span id="githubSignInUser">Github User</span>'s Bookmarklets
-                <button class="btn btn-mini pull-right" id="githubSignOut">Sign out</button></h3>
+                <button class="btn btn-mini pull-right" id="githubSignOut"><i class="fa fa-sign-out"></i> Sign out</button></h3>
               <ul>
               </ul>
             </div>
@@ -206,7 +204,7 @@
 
     <script type="text/javascript" src="bookmarklet.js"></script>
 
-    <!-- Google Analytics - ->
+    <!-- Google Analytics -->
     <script type="text/javascript">
 
       var _gaq = _gaq || [];
@@ -220,7 +218,7 @@
        })();
 
     </script>
-    -->
+    <!-- -->
   </body>
 </html>
 <!--

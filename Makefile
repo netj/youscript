@@ -31,5 +31,5 @@ git status
 # publish to GitHub
 publish: polish
 	@set -eu; cd $(STAGEDIR); \
-git commit -a -m "publishing $(PACKAGEVERSION)" || true; \
+git commit -a -m "publishing $(shell git describe --tags --always)" || true; \
 git push github gh-pages

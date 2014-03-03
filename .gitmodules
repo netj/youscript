@@ -7,12 +7,12 @@
 [submodule "coffee-script"]
 	path = extern/coffee-script
 	url = https://github.com/jashkenas/coffee-script.git
-[submodule "less"]
-	path = extern/less
-	url = https://github.com/less/less.js.git
 [submodule "buildkit"]
 	path = buildkit
 	url = https://github.com/netj/buildkit.git
 [submodule "extern/jquery"]
 	path = extern/jquery
 	url = https://github.com/jquery/jquery.git
+[submodule "extern/Font-Awesome"]
+	path = extern/Font-Awesome
+	url = https://github.com/FortAwesome/Font-Awesome.git

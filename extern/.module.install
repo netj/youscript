@@ -3,6 +3,8 @@ jquery/dist/jquery.min.js                   /
 bootstrap/bootstrap/js/bootstrap.min.js     /
 bootstrap/img                               /bootstrap/
 
+Font-Awesome/fonts                          /Font-Awesome/
+
 codemirror2/lib/codemirror.js               /codemirror2/lib/
 codemirror2/lib/codemirror.css              /codemirror2/lib/
 codemirror2/mode                            /codemirror2/
